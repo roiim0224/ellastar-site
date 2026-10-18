@@ -1095,7 +1095,7 @@ buildInputs(); buildPkg(); buildLists(); fillInputs(); render();
 const WSTEPS=[
   {t:"지금 어떤 상황인가요?",s:"예비 창업자도, 이미 운영 중인 원장님도 괜찮아요.",loc:true},
   {t:"공간을 알려 주세요",s:"계약서나 견적에 있는 숫자면 충분해요.",f:[["area","실평수","평","실제로 쓰는 전용 면적"],["rent","월 임대료","만원","부가세 포함"],["commonArea","임대 평수","평","계약서상 면적(공용 포함) · 관리비 계산에 써요"],["commonPerPy","평당 관리비","원","예: 임대평수 60평 × 10,000원 = 60만원"]]},
-  {t:"시작할 때 드는 돈",s:"대략적인 금액이어도 괜찮아요.",f:[["deposit","보증금","만원","나중에 돌려받는 돈"],["perPy","평당 인테리어 공사비","만원","예: 150만원","interior"],["equip","운동 기구","만원","@equip"],["setup","집기·간판·오픈 비용","만원","가구·락커·조명·간판·오픈 홍보"]]},
+  {t:"시작할 때 드는 돈",s:"대략적인 금액이어도 괜찮아요.",f:[["deposit","보증금","만원","나중에 돌려받는 돈"],["perPy","평당 인테리어 공사비","만원","예: 150만원","interior"],["equip","운동 기구","만원","@equip"],["fixtures","집기·가구·소품","만원","리셉션 가구·락커·거울·조명"],["openEtc","간판·오픈 비용","만원","간판·오픈 홍보·프로그램 세팅"]]},
   {t:"그룹수업은 어떻게 운영하나요?",s:"운영 예정이라면 계획한 숫자를 넣어 주세요.",f:[["gClasses","일주일 그룹수업 수","회","예: 하루 7타임 × 6일 = 42회"],["gCap","수업당 정원","명"],["gAvg","수업당 평균 참석","명","정원 중 실제로 오는 인원"]]},
   {t:"가격을 알려 주세요",s:"할인 후 실제로 받는 가격 기준이에요.",f:[["gPrice","그룹수업 1회 가격","원","회원권 가격 ÷ 횟수 (예: 30회 90만원 → 30,000원)"],["pSessions","개인레슨 한 달 횟수","회","모든 강사 합계 · 없으면 0"],["pPrice","개인레슨 1회 가격","원"]]},
   {t:"강사와 직원",s:"강사료는 수업 1회에 주는 금액이에요.",f:[["gFee","그룹 강사료 (1회)","원"],["pFee","개인레슨 강사료 (1회)","원"],["staffN","월급 받는 직원 수","명","매니저·안내 직원 등 · 없으면 0"],["staffPay","직원 월급 합계","만원","4대보험은 자동으로 더해 계산해요"]]},
@@ -1105,7 +1105,7 @@ const WSTEPS=[
 const wNum=v=>{const x=parseFloat(String(v).replace(/,/g,"")); return isFinite(x)?x:0;};
 function wRead(){ // 지금 P → 단계형 칸 값
   const sum=(a,f)=>(a||[]).reduce((s,x)=>s+Math.max(0,x[f]||0),0);
-  return {area:P.area,rent:P.rent,commonArea:P.commonArea,commonPerPy:P.commonPerPy,deposit:P.deposit,perPy:P.perPy,equip:P.equip,setup:P.fixtures+P.openEtc,
+  return {area:P.area,rent:P.rent,commonArea:P.commonArea,commonPerPy:P.commonPerPy,deposit:P.deposit,perPy:P.perPy,equip:P.equip,fixtures:P.fixtures,openEtc:P.openEtc,
     gClasses:P.gClasses,gCap:P.gCap,gAvg:P.gCap*P.gOcc/100,gPrice:P.gPrice*10000,pSessions:P.pSessions,pPrice:P.pPrice*10000,
     gFee:P.gFee*10000,pFee:P.pFee*10000,staffN:P.wStaffN!=null?P.wStaffN:(P.staffList||[]).filter(x=>x.sal>0).length,staffPay:sum(P.staffList,"sal"),
     utility:sum(P.usage,"amt"),mkt:P.mkt,etc:P.supplies+P.software+P.miscFixed,ownerPay:P.ownerPay,ownerGroup:P.ownerGroup,ownerPrivate:P.ownerPrivate};
@@ -1115,7 +1115,7 @@ function wWrite(k,v){ // 단계형 칸 하나 → P (전체 화면의 세부 칸
   P.pkgMode=0; P.memLink=0; P.gAtt=null; // 단계형은 수업 수·참석·가격을 직접 받으므로 회원권 설계·회원 흐름 연동을 끈다
   P.area=W.area; P.rent=W.rent; P.deposit=W.deposit; P.equip=W.equip;
   P.commonArea=W.commonArea; P.commonPerPy=W.commonPerPy; P.perPy=W.perPy;
-  if(k==="setup"){P.fixtures=W.setup; P.openEtc=0;}
+  P.fixtures=W.fixtures; P.openEtc=W.openEtc;
   P.gClasses=W.gClasses; P.gCap=W.gCap; P.gOcc=W.gCap>0?W.gAvg/W.gCap*100:0;
   P.gPrice=W.gPrice/10000; P.pSessions=W.pSessions; P.pPrice=W.pPrice/10000; P.gFee=W.gFee/10000; P.pFee=W.pFee/10000;
   if(k==="staffN") P.wStaffN=W.staffN;
