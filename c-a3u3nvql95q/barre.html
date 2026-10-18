@@ -241,6 +241,8 @@ body:not(.ready) .wrap,body:not(.ready) #wiz{display:none}
 .wz-box b{color:var(--fg)}
 .wz-cta button:disabled{opacity:.6;cursor:default}
 .wz-top .wz-acts{display:flex;gap:14px}
+/* 넓은 화면(PC·녹화)에서는 단계형을 크게: 영상에서 줄여 보여도 읽히게 (2026-10-18) */
+@media (min-width:900px){#wiz,#gate{zoom:1.25;padding-top:12px}}
 .to-wiz{display:inline-block;margin-top:8px;border:1px solid var(--accent);color:var(--accent);background:var(--surface);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
