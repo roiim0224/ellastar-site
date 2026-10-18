@@ -1,5 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>요가 스튜디오 수지분석기</title>
+<meta name="robots" content="noindex,nofollow">
+<title>바레 스튜디오 수지분석기</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -183,8 +184,53 @@ svg text{font-family:var(--f-num);font-size:11px;fill:var(--muted)}
 .pl tr.exp td small{display:block;font-weight:400;color:var(--muted);font-size:11px}
 .mini{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:400;color:var(--muted)}
 .mini .inp{width:86px}
+/* 단계형 입력 (처음 화면): 한 화면에 질문 몇 개 → 다음 → 결과. 전체 화면(.wrap)은 '자세히 보기' */
+#wiz{display:none;max-width:560px;margin:0 auto}
+.wiz-on #wiz{display:block}
+.wiz-on .wrap{display:none}
+.wz-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.wz-top button{border:0;background:none;color:var(--accent);font-size:13px;text-decoration:underline;cursor:pointer;padding:4px 0}
+.wz-bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-bottom:18px}
+.wz-bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.wz-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 18px}
+.wz-card h2{font-size:22px;line-height:1.35;margin:0 0 6px}
+.wz-s{color:var(--muted);margin:0 0 4px;font-size:14px}
+.wz-f{margin-top:18px}
+.wz-f>label{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+.wz-f>label small{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px}
+.wz-in{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:var(--surface-2);padding:0 14px}
+.wz-in:focus-within{border-color:var(--accent)}
+.wz-in input,.wz-in select{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font-size:18px;padding:12px 0;font-family:var(--f-num);outline:none}
+.wz-in input[type=text],.wz-in select{font-family:var(--f-body);font-size:16px}
+.wz-in span{color:var(--muted);font-size:14px;margin-left:8px;white-space:nowrap}
+.wz-calc{margin-top:6px;font-size:13px;color:var(--accent);font-weight:600}
+
+.wz-ch{display:grid;gap:8px;margin-top:8px}
+.wz-ch button{text-align:left;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);font-size:15px;cursor:pointer}
+.wz-ch button.on{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.wz-nav{display:flex;gap:10px;margin-top:22px}
+.wz-nav button{flex:1;padding:15px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--fg)}
+.wz-nav button.pri{flex:2;background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.wz-k{display:grid;gap:10px;margin-top:14px}
+.wz-k>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface-2)}
+.wz-k .l{font-size:13px;color:var(--muted)}
+.wz-k .v{font-size:26px;font-weight:700;font-family:var(--f-num);margin-top:2px;line-height:1.3}
+.wz-k .n{font-size:12.5px;color:var(--muted);margin-top:2px}
+.wz-k .neg{color:var(--bad)}
+.wz-msg{margin-top:14px;padding:12px 14px;border-radius:12px;font-size:14.5px;line-height:1.6}
+.wz-msg.good{background:var(--good-soft)}
+.wz-msg.bad{background:var(--bad-soft)}
+.wz-msg.warn{background:var(--warn-soft)}
+.wz-cta{display:grid;gap:8px;margin-top:16px}
+.wz-cta a,.wz-cta button{display:block;text-align:center;padding:14px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font-family:inherit}
+.wz-cta .apply{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.wz-cta .kakao{background:#fee500;border-color:#fee500;color:#191919}
+.wz-note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6}
+.to-wiz{display:inline-block;margin-top:8px;border:1px solid var(--accent);color:var(--accent);background:var(--surface);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+
+<section id="wiz" aria-live="polite"></section>
 
 <div class="wrap">
   <header>
@@ -360,7 +406,7 @@ const PRESETS = {
     rampStart:35,rampMonths:9,vat:1,ownerTeach:1,ownerPay:400,ownerGroup:10,ownerPrivate:40,memLink:1},
 };
 // ---------- 페이지 설정 (build_calculators.py가 업종별 파일을 만들 때 TYPE을 바꿈) ----------
-const TYPE="yoga"; // null = 세 업종 통합판(내부용) · "pilates" | "yoga" | "barre" = 공개용 업종 전용판
+const TYPE="barre"; // null = 세 업종 통합판(내부용) · "pilates" | "yoga" | "barre" = 공개용 업종 전용판
 const LINKS={kakao:"https://open.kakao.com/o/sZE82VSi", apply:"https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform", home:"https://ellastar.co.kr"}; // 카카오톡 채널·신청서 주소가 정해지면 여기만 바꿈
 const TYPE_INFO={pilates:{name:"필라테스",equip:"리포머·체어·바렐·매트·소도구 등"},yoga:{name:"요가",equip:"매트·볼스터·블록·소도구 등"},barre:{name:"바레",equip:"바(봉)·매트·소도구 등"}};
 const store = {
@@ -1023,6 +1069,121 @@ if(TYPE){const n=TYPE_INFO[TYPE].name;
   document.querySelectorAll(".presets .slot").forEach(sp=>{if(!sp.querySelector(`[data-preset="${TYPE}"]`)) sp.remove();});}
 $("cta-kakao").href=LINKS.kakao; $("cta-apply").href=LINKS.apply;
 buildInputs(); buildPkg(); buildLists(); fillInputs(); render();
+
+// ---------- 단계형 입력 (처음 화면) ----------
+// 질문 8단계 → 결과. 값은 전체 화면과 같은 P에 바로 저장되므로 '자세히 보기'에서 그대로 이어서 볼 수 있다.
+// 참고값 버튼은 쓰지 않음(Roi 2026-10-18). 관리비·인테리어는 평수 × 평당 단가로 받고 합계를 아래에 보여 줌.
+const WSTEPS=[
+  {t:"지금 어떤 상황인가요?",s:"예비 창업자도, 이미 운영 중인 원장님도 괜찮아요.",loc:true},
+  {t:"공간을 알려 주세요",s:"계약서나 견적에 있는 숫자면 충분해요.",f:[["area","실평수","평","실제로 쓰는 전용 면적"],["rent","월 임대료","만원","부가세 포함"],["commonArea","임대 평수","평","계약서상 면적(공용 포함) · 관리비 계산에 써요"],["commonPerPy","평당 관리비","원","예: 임대평수 60평 × 10,000원 = 60만원"]]},
+  {t:"시작할 때 드는 돈",s:"대략적인 금액이어도 괜찮아요.",f:[["deposit","보증금","만원","나중에 돌려받는 돈"],["perPy","평당 인테리어 공사비","만원","예: 150만원","interior"],["equip","운동 기구","만원","@equip"],["setup","집기·간판·오픈 비용","만원","가구·락커·조명·간판·오픈 홍보"]]},
+  {t:"그룹수업은 어떻게 운영하나요?",s:"운영 예정이라면 계획한 숫자를 넣어 주세요.",f:[["gClasses","일주일 그룹수업 수","회","예: 하루 7타임 × 6일 = 42회"],["gCap","수업당 정원","명"],["gAvg","수업당 평균 참석","명","정원 중 실제로 오는 인원"]]},
+  {t:"가격을 알려 주세요",s:"할인 후 실제로 받는 가격 기준이에요.",f:[["gPrice","그룹수업 1회 가격","원","회원권 가격 ÷ 횟수 (예: 30회 90만원 → 30,000원)"],["pSessions","개인레슨 한 달 횟수","회","모든 강사 합계 · 없으면 0"],["pPrice","개인레슨 1회 가격","원"]]},
+  {t:"강사와 직원",s:"강사료는 수업 1회에 주는 금액이에요.",f:[["gFee","그룹 강사료 (1회)","원"],["pFee","개인레슨 강사료 (1회)","원"],["staffN","월급 받는 직원 수","명","매니저·안내 직원 등 · 없으면 0"],["staffPay","직원 월급 합계","만원","4대보험은 자동으로 더해 계산해요"]]},
+  {t:"매달 나가는 그 밖의 돈",s:"월세 말고 매달 나가는 비용이에요.",f:[["utility","공과금","만원","전기·수도·가스·통신·렌탈"],["mkt","마케팅·광고","만원"],["etc","그 밖의 비용","만원","소모품·예약 프로그램·세무·보험"]]},
+  {t:"원장님 몫",s:"원장님의 시간도 비용이에요. 운영만 해도 받아야 할 금액을 넣어 주세요.",f:[["ownerPay","원장님 월급","만원"]],owner:true},
+];
+const wNum=v=>{const x=parseFloat(String(v).replace(/,/g,"")); return isFinite(x)?x:0;};
+function wRead(){ // 지금 P → 단계형 칸 값
+  const sum=(a,f)=>(a||[]).reduce((s,x)=>s+Math.max(0,x[f]||0),0);
+  return {area:P.area,rent:P.rent,commonArea:P.commonArea,commonPerPy:P.commonPerPy,deposit:P.deposit,perPy:P.perPy,equip:P.equip,setup:P.fixtures+P.openEtc,
+    gClasses:P.gClasses,gCap:P.gCap,gAvg:P.gCap*P.gOcc/100,gPrice:P.gPrice*10000,pSessions:P.pSessions,pPrice:P.pPrice*10000,
+    gFee:P.gFee*10000,pFee:P.pFee*10000,staffN:P.wStaffN!=null?P.wStaffN:(P.staffList||[]).filter(x=>x.sal>0).length,staffPay:sum(P.staffList,"sal"),
+    utility:sum(P.usage,"amt"),mkt:P.mkt,etc:P.supplies+P.software+P.miscFixed,ownerPay:P.ownerPay,ownerGroup:P.ownerGroup,ownerPrivate:P.ownerPrivate};
+}
+function wWrite(k,v){ // 단계형 칸 하나 → P (전체 화면의 세부 칸으로 나눠 넣음)
+  const W=wRead(); W[k]=v;
+  P.pkgMode=0; P.memLink=0; P.gAtt=null; // 단계형은 수업 수·참석·가격을 직접 받으므로 회원권 설계·회원 흐름 연동을 끈다
+  P.area=W.area; P.rent=W.rent; P.deposit=W.deposit; P.equip=W.equip;
+  P.commonArea=W.commonArea; P.commonPerPy=W.commonPerPy; P.perPy=W.perPy;
+  if(k==="setup"){P.fixtures=W.setup; P.openEtc=0;}
+  P.gClasses=W.gClasses; P.gCap=W.gCap; P.gOcc=W.gCap>0?W.gAvg/W.gCap*100:0;
+  P.gPrice=W.gPrice/10000; P.pSessions=W.pSessions; P.pPrice=W.pPrice/10000; P.gFee=W.gFee/10000; P.pFee=W.pFee/10000;
+  if(k==="staffN") P.wStaffN=W.staffN;
+  if(k==="staffN"||k==="staffPay"){const n=W.staffPay>0?Math.max(1,Math.round(W.staffN)):Math.max(0,Math.round(W.staffN)), old=P.staffList||[];
+    P.staffList=Array.from({length:n},(_,i)=>({name:old[i]&&old[i].name||`직원 ${i+1}`,sal:n?W.staffPay/n:0,age:old[i]&&old[i].age||30}));}
+  if(k==="utility") P.usage=[{name:"공과금 합계",amt:W.utility}];
+  P.mkt=W.mkt;
+  if(k==="etc"){P.supplies=0; P.software=0; P.miscFixed=W.etc;}
+  P.ownerPay=W.ownerPay; P.ownerGroup=W.ownerGroup; P.ownerPrivate=W.ownerPrivate;
+  store.set("snc-params",P);
+}
+let wStep=Math.min(WSTEPS.length,Math.max(0,+(store.get("snc-wiz-step")||0)));
+const WCALC={ // 칸 아래에 보여 주는 합계
+  interior:()=>`인테리어 총액 = 실평수 ${wFmt(P.area)}평 × ${wFmt(P.perPy)}만원 = ${won(P.area*P.perPy)}`};
+const wFmt=x=>new Intl.NumberFormat("ko-KR",{maximumFractionDigits:1}).format(x);
+function wField([k,label,unit,hint,calc]){
+  if(hint==="@equip") hint=TYPE?TYPE_INFO[TYPE].equip:"리포머·매트·소도구 등";
+  const v=wRead()[k];
+  return `<div class="wz-f"><label for="wz-${k}">${label}${hint?`<small>${hint}</small>`:""}</label>
+    <div class="wz-in"><input id="wz-${k}" data-wk="${k}" type="text" inputmode="decimal" autocomplete="off" placeholder="0" value="${v>0?wFmt(v):""}"><span>${unit}</span></div>
+    ${calc?`<div class="wz-calc" data-wcalc="${calc}">${WCALC[calc]()}</div>`:""}</div>`;
+}
+function wDraw(){
+  const n=WSTEPS.length, box=$("wiz"), top=`<div class="wz-top"><span>${wStep<n?`${wStep+1} / ${n} 단계`:"결과"}</span><button type="button" data-wgo="full">전체 화면으로 보기</button></div>
+    <div class="wz-bar"><i style="width:${Math.min(wStep+1,n)/n*100}%"></i></div>`;
+  if(wStep>=n){box.innerHTML=top+wResult(); return;}
+  const s=WSTEPS[wStep]; let body="";
+  if(s.loc){
+    const opt=(arr,v)=>`<option value="">선택</option>`+arr.map(x=>`<option${x===v?" selected":""}>${x}</option>`).join("");
+    body=`<div class="wz-ch" role="group" aria-label="지금 상태">${["창업 준비 중","운영 중","확장(2호점·업종 추가) 고민"].map(x=>`<button type="button" data-wst="${x}" class="${P.loc.status===x?"on":""}">${x}</button>`).join("")}</div>
+      <div class="wz-f"><label for="wz-sido">지역 (시·도)<small>선택 사항이에요</small></label><div class="wz-in"><select id="wz-sido" data-wloc="sido">${opt(SIDO,P.loc.sido)}</select></div></div>
+      <div class="wz-f"><label for="wz-sigungu">시·군·구<small>예: 강남구, 성남시 분당구</small></label><div class="wz-in"><input id="wz-sigungu" data-wloc="sigungu" type="text" value="${(P.loc.sigungu||"").replace(/"/g,"&quot;")}"></div></div>`;
+  } else body=s.f.map(wField).join("");
+  if(s.owner){
+    const t=!!P.ownerTeach;
+    body+=`<div class="wz-f"><label>원장님이 직접 수업도 하시나요?</label><div class="wz-ch">
+      <button type="button" data-wteach="1" class="${t?"on":""}">네, 직접 수업해요</button><button type="button" data-wteach="0" class="${t?"":"on"}">아니요, 운영만 해요</button></div></div>`+
+      (t?[["ownerGroup","원장님 그룹수업","회/주"],["ownerPrivate","원장님 개인레슨","회/월"]].map(wField).join(""):"");
+  }
+  box.innerHTML=top+`<div class="wz-card"><h2>${s.t}</h2><p class="wz-s">${s.s}</p>${body}
+    <div class="wz-nav">${wStep>0?`<button type="button" data-wgo="prev">이전</button>`:""}<button type="button" class="pri" data-wgo="next">${wStep===n-1?"결과 보기":"다음"}</button></div></div>`;
+}
+function wResult(){
+  const q=derive(clone(P)), r=R(q);
+  const occ=bisect(x=>R(Object.assign({},q,{gOcc:x,gAtt:null})).op,0,300);
+  const nowAvg=q.gCap*q.gOcc/100, needAvg=occ===null?null:q.gCap*occ/100;
+  const needMem=needAvg===null||!(q.visits>0)?null:Math.ceil(r.gSess*needAvg/q.visits);
+  let msg;
+  if(!(r.gross>0)) msg=`<div class="wz-msg warn">아직 매출이 0이에요. 수업 수·참석 인원·가격을 넣으면 결과가 나와요.</div>`;
+  else if(r.op>=0) msg=`<div class="wz-msg good">지금 숫자로는 원장님 월급 ${won(q.ownerPay)}을 드리고도 매달 <b>${won(r.op)}</b>이 남아요.${needAvg!==null?` 수업당 평균 ${wFmt(needAvg)}명 아래로 내려가면 적자가 시작돼요.`:""}</div>`;
+  else msg=`<div class="wz-msg bad">지금 숫자로는 매달 <b>${won(-r.op)}</b> 적자예요. ${needAvg===null?"지금 수업 수와 가격으로는 정원을 다 채워도 본전이 어려워요. 가격이나 비용을 다시 볼 필요가 있어요.":`수업당 평균 ${wFmt(needAvg)}명이 와야 본전이에요 (지금 ${wFmt(nowAvg)}명).`}</div>`;
+  return `<div class="wz-card"><h2>내 스튜디오 숫자 결과</h2><p class="wz-s">입력한 숫자로 계산한 참고용 결과이며, 수익을 보장하지 않아요.</p>
+    <div class="wz-k">
+      <div><div class="l">한 달 매출</div><div class="v">${won(r.gross)}</div><div class="n">${q.vat?"부가세 포함":""}</div></div>
+      <div><div class="l">한 달에 남는 돈</div><div class="v ${r.op<0?"neg":""}">${won(r.op)}</div><div class="n">원장님 월급 ${won(q.ownerPay)}·감가상각을 빼고 남는 돈</div></div>
+      <div><div class="l">본전이 되려면</div><div class="v">${needAvg===null?"—":`수업당 ${wFmt(needAvg)}명`}</div><div class="n">${needMem===null?"지금 정원·수업 수로는 계산이 어려워요":`활성 회원 약 ${nf.format(needMem)}명 (회원 1명이 한 달 ${wFmt(q.visits)}회 출석 기준)`}</div></div>
+    </div>${msg}
+    <div class="wz-cta"><a class="apply" href="${LINKS.apply}" target="_blank" rel="noopener">내 숫자 무료 진단 신청</a><a class="kakao" href="${LINKS.kakao}" target="_blank" rel="noopener">카카오톡으로 문의</a>
+      <button type="button" data-wgo="full">자세히 보기 (손익계산서·투자 회수)</button><button type="button" data-wgo="edit">숫자 고치기</button></div>
+    <p class="wz-note">입력한 숫자는 이 브라우저에만 저장돼요.</p></div>`;
+}
+function wShow(view){
+  store.set("snc-view",view);
+  document.body.classList.toggle("wiz-on",view==="wiz");
+  if(view==="wiz") wDraw(); else {buildPkg(); buildLists(); fillInputs(); render();} // buildInputs는 다시 부르지 않음(이벤트 중복)
+  window.scrollTo(0,0);
+}
+$("wiz").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  const go=b.dataset.wgo;
+  if(go==="full") return wShow("full");
+  if(go==="next"||go==="prev"||go==="edit"){wStep=go==="next"?wStep+1:go==="prev"?wStep-1:0; wStep=Math.max(0,Math.min(WSTEPS.length,wStep)); store.set("snc-wiz-step",wStep); wDraw(); window.scrollTo(0,0); return;}
+  if(b.dataset.wst){P.loc.status=b.dataset.wst; store.set("snc-params",P); wDraw(); return;}
+  if(b.dataset.wteach){P.ownerTeach=+b.dataset.wteach; store.set("snc-params",P); wDraw(); return;}
+});
+$("wiz").addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.wloc){P.loc[t.dataset.wloc]=t.value; store.set("snc-params",P); return;}
+  const k=t.dataset.wk; if(!k) return;
+  wWrite(k,Math.max(0,wNum(t.value)));
+  $("wiz").querySelectorAll("[data-wcalc]").forEach(el=>el.textContent=WCALC[el.dataset.wcalc]());
+});
+$("wiz").addEventListener("change",e=>{if(e.target.dataset.wloc){P.loc[e.target.dataset.wloc]=e.target.value; store.set("snc-params",P);}});
+$("wiz").addEventListener("blur",e=>{const t=e.target; if(t.dataset&&t.dataset.wk){const x=wNum(t.value); t.value=x>0?wFmt(x):"";}},true);
+document.querySelector("header > div").insertAdjacentHTML("beforeend",`<button type="button" class="to-wiz" id="to-wiz">← 단계별로 쉽게 입력하기</button>`);
+$("to-wiz").addEventListener("click",()=>{wStep=0; store.set("snc-wiz-step",0); wShow("wiz");});
+wShow(store.get("snc-view")==="full"?"full":"wiz");
 </script>
 
 </body></html>
