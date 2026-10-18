@@ -1202,9 +1202,9 @@ $("wiz").addEventListener("blur",e=>{const t=e.target; if(t.dataset&&t.dataset.w
 document.querySelector("header > div").insertAdjacentHTML("beforeend",`<button type="button" class="to-wiz" id="to-wiz">← 단계별로 쉽게 입력하기</button>`);
 $("to-wiz").addEventListener("click",()=>{wStep=0; store.set("snc-wiz-step",0); wShow("wiz");});
 // ---------- 카카오 로그인 · 1분 정보 입력 · 계정 저장 (공개 업종 페이지만, TYPE이 있을 때) ----------
-// 데이터: Supabase 'ellastar' 프로젝트의 calc 영역 (members = 1분 정보, plans = 입력값). 행 단위 보호로 본인 것만 읽고 씀.
+// 데이터: Supabase 'ellastar-calculator' 프로젝트(서울)의 calc 영역 (members = 1분 정보, plans = 입력값). 행 단위 보호로 본인 것만 읽고 씀.
 // 키는 브라우저용 공개 키(anon)라 페이지에 넣어도 됨. 관리자 키는 절대 넣지 않음.
-const SB={url:"https://yytqveidsxxrwecspqkn.supabase.co",key:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5dHF2ZWlkc3h4cndlY3NwcWtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MTI3OTcsImV4cCI6MjA3OTI4ODc5N30.D7cKfPTS-jTv-jVq9uICH5kfZUZ1xTVOWvT-5GZDIAI"};
+const SB={url:"https://oxeyqqdzflwqoxoktees.supabase.co",key:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94ZXlxcWR6Zmx3cW94b2t0ZWVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMTM2MzYsImV4cCI6MjEwNzg4OTYzNn0.LFaO2N8xsntW6Q9zpuybzUumUxfQr4PgFEcG7LK-Ths"}; // 분석기 전용 프로젝트 ellastar-calculator (서울, 2026-10-18 분리)
 const PRIVACY_VERSION="2026-10-18";
 const MSTATUS=["필라테스 창업 준비","필라테스 운영 중","바레 확장 고민 (필라테스 운영 중)","바레 창업 준비","바레 운영 중","요가 창업 준비·운영","강사 (아직 창업 계획 없음)"];
 const MTIMING=["3개월 안","6개월 안","1년 안","1년 이후 · 미정","이미 운영 중"];
@@ -1251,7 +1251,7 @@ function gateForm(){
       · 수집 항목: 카카오 계정 정보(회원번호·닉네임, 동의한 경우 이메일), 이름, 휴대폰 번호, 지역, 창업 상태·시기·평수·예산, 관심 분야, 수지분석기에 입력한 숫자<br>
       · 이용 목적: 수지분석기 저장·불러오기, 무료 숫자 진단 상담 연락, 상담 내용 안내<br>
       · 보관 기간: 탈퇴 또는 상담 종료 후 1년 (요청 시 즉시 삭제)<br>
-      · 보관 장소: Supabase(싱가포르 서버)에 보관됩니다 (국외 이전, 자세한 내용은 <a href="/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>)<br>
+      · 보관 장소: Supabase의 서울 서버에 보관됩니다 (해외 사업자 위탁, 자세한 내용은 <a href="/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>)<br>
       · 동의를 거부할 수 있으며, 거부하면 수지분석기와 진단 상담을 이용할 수 없습니다.</div>
     <label class="wz-chk"><input type="checkbox" id="g-agree"><span><b>[필수]</b> 개인정보 수집·이용에 동의합니다</span></label>
     <label class="wz-chk"><input type="checkbox" id="g-mkt"><span><b>[선택]</b> 마케팅 정보 수신 동의 · 새 영상, 수지분석기 업데이트, 설명회·교육과정·기구 안내를 카카오톡·문자로 받습니다. 동의하지 않아도 이용할 수 있고, 언제든 수신을 거부할 수 있어요.</span></label>
