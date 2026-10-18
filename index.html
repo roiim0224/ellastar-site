@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ELLASTAR — One System to Rule Them All</title>
+<meta name="description" content="ELLASTAR · 공간 효율성과 수익을 증대할 솔루션. 곧 오픈됩니다.">
+<meta property="og:title" content="ELLASTAR — One System to Rule Them All">
+<meta property="og:description" content="공간 효율성과 수익을 증대할 솔루션. 곧 오픈됩니다.">
+<meta property="og:image" content="assets/hero-poster.jpg">
+<link rel="icon" href="assets/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap">
+<style>
+/* ELLASTAR 첫 페이지(티저): 모션그래픽 배경 + 로고 + 한 줄 + 곧 오픈. 제품 사진·설명은 추후 공개 */
+:root{--red:#d64a37;--ink:#14110f;--paper:#f4efe8;--muted:rgba(244,239,232,.72);--f:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ink);color:var(--paper);font-family:var(--f)}
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}
+.hero video,.hero .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.hero .poster{background:url(assets/hero-poster.jpg) center/cover no-repeat}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,rgba(20,17,15,.45) 0%,rgba(20,17,15,.78) 70%,rgba(20,17,15,.92) 100%)}
+.content{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px;max-width:760px}
+.logo{width:min(560px,82vw);height:auto;opacity:0;animation:rise 1.4s .2s ease-out forwards}
+.line{font-size:clamp(17px,2.6vw,22px);font-weight:400;letter-spacing:.02em;margin:0;color:var(--paper);opacity:0;animation:rise 1.2s .9s ease-out forwards;text-wrap:balance}
+.soon{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);border:1px solid rgba(244,239,232,.35);border-radius:999px;padding:9px 18px;opacity:0;animation:rise 1.2s 1.4s ease-out forwards}
+.soon i{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(214,74,55,.7);animation:pulse 2s infinite}
+.soon b{font-weight:500;letter-spacing:.06em;text-transform:none}
+footer{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:14px 16px calc(14px + env(safe-area-inset-bottom));font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;text-align:center}
+footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid rgba(244,239,232,.25)}
+footer a:hover{color:var(--paper)}
+.cta{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 18px;text-decoration:none;color:#fff;background:var(--red);border-radius:14px;padding:16px 22px 16px 26px;margin-top:10px;box-shadow:0 10px 30px rgba(214,74,55,.35);text-align:left;opacity:0;animation:rise 1.2s 1.9s ease-out forwards;transition:transform .2s,box-shadow .2s,background .2s}
+.cta:hover,.cta:focus-visible{transform:translateY(-2px);box-shadow:0 14px 36px rgba(214,74,55,.5);background:#e0533f}
+.cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.cta-k{font-size:clamp(17px,2.4vw,20px);font-weight:600;letter-spacing:-.005em}
+.cta-s{grid-column:1;font-size:13px;color:rgba(255,255,255,.85)}
+.cta-types{white-space:nowrap}
+.cta-types::before{content:"· "}
+@media (max-width:560px){.cta-types{display:block}.cta-types::before{content:none}}
+.cta-arrow{grid-column:2;grid-row:1 / span 2;font-size:24px;transition:transform .2s}
+.cta:hover .cta-arrow{transform:translateX(4px)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(214,74,55,.7)}70%{box-shadow:0 0 0 10px rgba(214,74,55,0)}100%{box-shadow:0 0 0 0 rgba(214,74,55,0)}}
+@media (prefers-reduced-motion:reduce){.hero video{display:none}.logo,.line,.soon,.cta{animation:none;opacity:1}.soon i{animation:none}}
+@media (max-width:560px){footer{position:relative;margin-top:auto}.hero{justify-content:space-between}.content{margin:auto 0}}
+</style>
+</head>
+<body>
+<main class="hero">
+  <div class="poster" aria-hidden="true"></div>
+  <video autoplay muted loop playsinline preload="metadata" poster="assets/hero-poster.jpg" aria-hidden="true">
+    <source src="assets/hero.mp4" type="video/mp4">
+  </video>
+  <div class="content">
+    <h1 style="margin:0"><img class="logo" src="assets/ellastar-logo_white.png" alt="ELLASTAR — One System to Rule Them All"></h1>
+    <p class="line">공간 효율성과 수익을 증대할 솔루션</p>
+    <div class="soon"><i aria-hidden="true"></i>Coming soon · <b>곧 오픈됩니다</b></div>
+    <a class="cta" href="calculator/">
+      <span class="cta-k">스튜디오 수지분석기 무료로 써 보기</span>
+      <span class="cta-s">내 스튜디오, 한 달에 얼마 남을까? <span class="cta-types">필라테스 · 바레 · 요가</span></span>
+      <span class="cta-arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+  <footer>
+    <span>상호 엘라스타 · 대표 홍지영 · 사업자등록번호 871-56-01015 · 문의 010-3649-0224</span>
+    <span><a href="https://open.kakao.com/o/sZE82VSi" target="_blank" rel="noopener">카카오톡 문의</a> · <a href="privacy.html">개인정보처리방침</a></span>
+  </footer>
+</main>
+</body>
+</html>

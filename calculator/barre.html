@@ -1,0 +1,1028 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>바레 스튜디오 수지분석기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: 좌측 입력 패널(접이식 섹션) + 우측 고정 결과 패널, 하단에 손익 흐름·민감도·실적 기록 */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --surface-2:#eceef2; --line:#d8dbe2;
+  --fg:#1c2230; --muted:#5d6577; --accent:#2f4a7a; --accent-soft:#e3e9f4;
+  --good:#1f7a4d; --good-soft:#dff1e7; --warn:#a1640c; --warn-soft:#fbefd9; --bad:#b0362f; --bad-soft:#f8e1df;
+  --c1:#2f4a7a; --c2:#6c8cc2; --c3:#b0773a; --c4:#d6a96a; --c5:#6b7b5c; --c6:#9aa7b8; --c7:#7d5a8c; --c8:#1f7a4d;
+  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --surface:#1a1f29; --surface-2:#222835; --line:#2f3646;
+  --fg:#e6e9f0; --muted:#9aa3b5; --accent:#8fb0e6; --accent-soft:#243149;
+  --good:#5cc08c; --good-soft:#163527; --warn:#e2a74e; --warn-soft:#3a2c15; --bad:#ec7a70; --bad-soft:#3d1d1b;
+  --c1:#8fb0e6; --c2:#5a7bb5; --c3:#d8995a; --c4:#e8c48e; --c5:#9db089; --c6:#6f7c90; --c7:#b48fc4; --c8:#5cc08c;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --surface:#1a1f29; --surface-2:#222835; --line:#2f3646;
+  --fg:#e6e9f0; --muted:#9aa3b5; --accent:#8fb0e6; --accent-soft:#243149;
+  --good:#5cc08c; --good-soft:#163527; --warn:#e2a74e; --warn-soft:#3a2c15; --bad:#ec7a70; --bad-soft:#3d1d1b;
+  --c1:#8fb0e6; --c2:#5a7bb5; --c3:#d8995a; --c4:#e8c48e; --c5:#9db089; --c6:#6f7c90; --c7:#b48fc4; --c8:#5cc08c;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+h1{font-size:24px;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:4px 0 0;max-width:62ch}
+.presets{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.presets span{font-size:12px;color:var(--muted);margin-right:4px}
+.cta{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--accent-soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:13px}
+.cta p{margin:0;max-width:70ch}
+.cta .btn{display:inline-block;text-decoration:none;border-radius:6px;padding:8px 14px;font-weight:600;font-size:13px;margin-left:6px}
+.cta .btn.kakao{background:#fee500;color:#191919}
+.cta .btn.apply{background:var(--accent);color:var(--surface)}
+.presets .slot{display:inline-flex}
+.presets .slot button:first-child{border-radius:6px 0 0 6px}
+.presets .slot button.save{border-radius:0 6px 6px 0;border-left:0;font-size:12px;padding:6px 9px;color:var(--muted)}
+.presets .slot button.save.done{color:var(--good);border-color:var(--good)}
+.presets .slot button.armed{background:var(--warn-soft);color:var(--warn)}
+.presets button.blank{margin-left:10px;border-color:var(--bad);color:var(--bad)}
+.presets button.blank.armed{background:var(--bad);color:var(--surface)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:6px;padding:6px 12px}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.on{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.inputs{display:flex;flex-direction:column;gap:10px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:8px}
+summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:600}
+summary::-webkit-details-marker{display:none}
+summary .tot{font-family:var(--f-num);font-weight:500;color:var(--muted);font-size:13px}
+summary::after{content:"+";color:var(--muted);font-family:var(--f-num)}
+details[open] summary::after{content:"−"}
+.fields{padding:2px 14px 14px;display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 128px;gap:10px;align-items:center}
+.row label{font-size:13px;min-width:0}
+.row label small{display:block;color:var(--muted);font-size:11.5px;line-height:1.35}
+.inp{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;background:var(--surface-2);overflow:hidden}
+.inp input{width:100%;min-width:0;border:0;background:transparent;color:var(--fg);font-family:var(--f-num);font-size:13.5px;padding:6px 6px 6px 8px;text-align:right}
+.inp input:focus{outline:none}
+.inp:focus-within{border-color:var(--accent)}
+.inp em{font-style:normal;font-size:11.5px;color:var(--muted);padding-right:8px;white-space:nowrap}
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px}
+.results{position:sticky;top:env(safe-area-inset-top,0px);display:flex;flex-direction:column;gap:16px}
+@media (max-width:900px){.results{position:static}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px}
+.panel h2{font-size:15px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.panel h2 small{font-weight:400;color:var(--muted);font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+@media (max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--surface);padding:14px}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-family:var(--f-num);font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}
+.kpi .n{font-size:11.5px;color:var(--muted);margin-top:2px}
+.neg{color:var(--bad)} .pos{color:var(--good)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.pl td{padding:6px 0;border-bottom:1px solid var(--line)}
+.pl td:nth-child(2),.pl td:nth-child(3){text-align:right;font-family:var(--f-num);white-space:nowrap}
+.pl td:nth-child(3){color:var(--muted);width:64px;font-size:12px}
+.pl tr.sum td{font-weight:600;border-bottom:2px solid var(--fg)}
+.pl tr.ind td:first-child{padding-left:14px;color:var(--muted)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:640px){.two{grid-template-columns:minmax(0,1fr)}}
+.chips{display:flex;flex-direction:column;gap:8px}
+.chip{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;font-size:13px}
+.chip b{font-family:var(--f-num);font-weight:500}
+.pill{font-size:11.5px;padding:2px 8px;border-radius:999px;font-weight:600;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0}
+.bar{display:flex;height:22px;border-radius:4px;overflow:hidden;background:var(--surface-2)}
+.bar div{height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.legend b{font-family:var(--f-num);font-weight:500;color:var(--muted)}
+.scroll{overflow-x:auto}
+svg text{font-family:var(--f-num);font-size:11px;fill:var(--muted)}
+.sens th,.sens td{padding:7px 8px;text-align:right;font-family:var(--f-num);font-size:12.5px;border:1px solid var(--line);white-space:nowrap}
+.sens th{background:var(--surface-2);font-weight:500;color:var(--muted)}
+.sens td.cur{outline:2px solid var(--accent);outline-offset:-2px;font-weight:600}
+.act th{font-size:12px;color:var(--muted);font-weight:500;text-align:right;padding:6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.act th:first-child,.act td:first-child{text-align:left}
+.act td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--f-num);font-size:12.5px;white-space:nowrap}
+.act input{width:96px;border:1px solid var(--line);border-radius:4px;background:var(--surface-2);color:var(--fg);font-family:var(--f-num);font-size:12.5px;padding:4px 6px;text-align:right}
+.act tfoot td{font-weight:600;border-top:2px solid var(--fg)}
+.mem{border-collapse:collapse;min-width:980px;width:100%}
+.mem th,.mem td{padding:4px 5px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--f-num);font-size:12.5px;white-space:nowrap}
+.mem thead th{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:500}
+.mem th:first-child,.mem td:first-child{text-align:left;font-family:var(--f-body);position:sticky;left:0;background:var(--surface);z-index:1}
+.mem td:first-child small{display:block;color:var(--muted);font-size:10.5px}
+.mem input{width:54px;border:1px solid var(--line);border-radius:4px;background:var(--surface-2);color:var(--fg);font-family:var(--f-num);font-size:12.5px;padding:4px 5px;text-align:right}
+.mem input::placeholder{color:var(--muted);opacity:.75}
+.mem tr.in td{background:var(--accent-soft)} .mem tr.in td:first-child{font-weight:600}
+.mem tr.money td{font-weight:600} .mem tr.sep td{border-top:2px solid var(--fg)}
+.mem td.tot{border-left:2px solid var(--line);font-weight:600}
+.mix{border-collapse:collapse;font-size:12.5px;margin:6px 0 4px;width:auto!important;min-width:0}
+.mix th,.mix td{padding:4px 8px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--f-num);white-space:nowrap}
+.mix th{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:500}
+.mix th:first-child,.mix td:first-child{text-align:left;font-family:var(--f-body)}
+.mix input{width:52px;border:1px solid var(--line);border-radius:4px;background:var(--surface-2);color:var(--fg);font-family:var(--f-num);font-size:12.5px;padding:4px 5px;text-align:right}
+.mix tfoot td{font-weight:600;border-top:2px solid var(--fg)}
+.mem-h{font-size:14px;margin:22px 0 4px}
+.mem.det td{line-height:1.25}
+.mem.det td small{display:block;color:var(--muted);font-size:10.5px;font-weight:400}
+.flag{font-size:12.5px;padding:10px 12px;border-radius:6px;margin-top:12px}
+.flag.good{background:var(--good-soft);color:var(--good)} .flag.warn{background:var(--warn-soft);color:var(--warn)} .flag.bad{background:var(--bad-soft);color:var(--bad)}
+.foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+.inp input:disabled{color:var(--muted);cursor:not-allowed}
+.row.derived .inp{background:transparent;border-style:dashed}
+.pk{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+.pk th{font-size:11px;color:var(--muted);font-weight:500;text-align:right;padding:4px 3px;white-space:nowrap}
+.pk th:first-child{text-align:left}
+.pk td{padding:4px 3px;text-align:right;border-top:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.pk td:first-child{text-align:left}
+.pk input{width:46px;border:1px solid var(--line);border-radius:4px;background:var(--surface-2);color:var(--fg);font-family:var(--f-num);font-size:12.5px;padding:4px 5px;text-align:right}
+.pk .price{font-family:var(--f-num);line-height:1.3}
+.pk .price small{display:block;color:var(--muted);font-size:11px}
+.pk button.x{padding:1px 7px;font-size:13px;color:var(--muted);border-color:transparent;background:transparent}
+.pkfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:4px}
+.strat{min-width:640px}
+.strat th,.strat td{padding:7px 8px;text-align:right;font-family:var(--f-num);font-size:12.5px;border-bottom:1px solid var(--line);white-space:nowrap}
+.strat th{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:500}
+.strat th:first-child,.strat td:first-child{text-align:left;font-family:var(--f-body)}
+.strat tr.cur td{background:var(--accent-soft);font-weight:600}
+.strat tr.best td:first-child::after{content:" 이익 최대";font-size:11px;color:var(--good);font-weight:600}
+.strat td button{padding:3px 10px;font-size:12px}
+.strat tfoot td{font-weight:600;border-top:2px solid var(--fg);border-bottom:0}
+.pk input{width:44px}
+.pk h3,.dist-h{font-size:12.5px;margin:10px 0 2px;color:var(--fg)}
+.dist{border-collapse:collapse;min-width:640px}
+.dist th,.dist td{padding:5px 6px;border:1px solid var(--line);text-align:center;font-family:var(--f-num);font-size:12px;white-space:nowrap;line-height:1.3}
+.dist th{background:var(--surface-2);color:var(--muted);font-weight:500;font-family:var(--f-body)}
+.dist td:first-child,.dist th:first-child{text-align:left;font-family:var(--f-body)}
+.dist td:first-child small{display:block;color:var(--muted);font-size:11px}
+.dist td.on{background:var(--accent-soft)}
+.dist td.on small{display:block;color:var(--muted);font-size:10.5px}
+.dist td.off{background:transparent}
+.sub-h{font-size:12.5px;font-weight:600;margin:8px 0 0;display:flex;justify-content:space-between;gap:8px}
+.sub-h span{font-family:var(--f-num);font-weight:500;color:var(--muted)}
+.lst{width:100%;border-collapse:collapse;font-size:12.5px}
+.lst th{font-size:11px;color:var(--muted);font-weight:500;text-align:right;padding:3px;white-space:nowrap}
+.lst th:first-child{text-align:left}
+.lst td{padding:3px;text-align:right;border-top:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+.lst td:first-child{text-align:left}
+.lst input{border:1px solid var(--line);border-radius:4px;background:var(--surface-2);color:var(--fg);font-size:12.5px;padding:4px 5px;width:56px;text-align:right;font-family:var(--f-num)}
+.lst input.t{width:100%;min-width:72px;text-align:left;font-family:var(--f-body)}
+.lst .calc{font-family:var(--f-num);line-height:1.3}
+.lst .calc small{display:block;color:var(--muted);font-size:10.5px}
+.lst button.x{padding:1px 7px;font-size:13px;color:var(--muted);border-color:transparent;background:transparent}
+.strat input{width:58px;border:1px solid var(--line);border-radius:4px;background:var(--surface-2);color:var(--fg);font-family:var(--f-num);font-size:12.5px;padding:4px 6px;text-align:right}
+.strat input.w{width:96px}
+.strat td.ed{padding:4px 6px}
+.strat .unit{color:var(--muted);font-size:11px;margin-left:3px}
+.strat button.x{padding:1px 7px;font-size:13px;color:var(--muted);border-color:transparent;background:transparent}
+.pl tr.exp td{background:var(--warn-soft);font-weight:600;border-bottom:2px solid var(--fg)}
+.pl tr.exp td small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.mini{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:400;color:var(--muted)}
+.mini .inp{width:86px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>스튜디오 수지분석기</h1>
+      <p class="sub">필라테스·요가·바레 스튜디오의 매출, 비용, 영업이익, 손익분기점, 투자회수기간을 한 화면에서 계산합니다. 금액 단위는 모두 <b>만원</b>이며, 값을 바꾸면 즉시 다시 계산됩니다.</p>
+    </div>
+    <div class="presets" role="group" aria-label="업종별 저장">
+      <span>업종</span>
+      <span class="slot"><button type="button" data-preset="pilates" id="p-pilates">필라테스</button><button type="button" class="save" data-save="pilates">저장</button></span>
+      <span class="slot"><button type="button" data-preset="yoga" id="p-yoga">요가</button><button type="button" class="save" data-save="yoga">저장</button></span>
+      <span class="slot"><button type="button" data-preset="barre" id="p-barre">바레</button><button type="button" class="save" data-save="barre">저장</button></span>
+      <button type="button" id="blank" class="blank" title="지금 화면의 숫자를 모두 0으로 비웁니다 (저장해 둔 업종 칸은 그대로)">초기화</button>
+      <small id="slot-status" style="flex-basis:100%;text-align:right;color:var(--muted);font-size:12px"></small>
+    </div>
+  </header>
+
+  <div class="cta" id="cta">
+    <p><b>입력한 숫자로 계산한 참고용 결과이며, 수익을 보장하지 않습니다.</b> 내 숫자를 함께 해석해 드리는 무료 진단을 받아 보세요.</p>
+    <div><a class="btn kakao" id="cta-kakao" href="https://open.kakao.com/o/sZE82VSi" target="_blank" rel="noopener">카카오톡으로 문의</a><a class="btn apply" id="cta-apply" href="https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform" target="_blank" rel="noopener">무료 숫자 진단 신청</a></div>
+  </div>
+
+  <section class="kpis" id="kpis" aria-label="핵심 지표"></section>
+
+  <div class="grid">
+    <div class="inputs" id="inputs"></div>
+
+    <div class="results">
+      <div class="two">
+        <div class="panel">
+          <h2>월 손익계산서 <small>정상 운영 기준 · 매출은 결제 기준 · %는 총매출(부가세 포함) 대비</small></h2>
+          <table class="pl" id="pl"></table>
+        </div>
+        <div class="panel">
+          <h2>운영 건전성 <small>참고 기준</small></h2>
+          <div class="chips" id="chips"></div>
+          <p class="note">기준선은 업계에서 흔히 쓰는 경험치입니다. 상권·규모·브랜드 포지션에 따라 달라지므로 절대 기준이 아닌 점검용으로 쓰세요.</p>
+          <h2 style="margin-top:18px">손익분기점</h2>
+          <div class="chips" id="bep"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="pkg-panel">
+        <h2>그룹 이용권 설계 <label class="mini">1회 정상가 <span class="inp" style="width:120px"><input data-k="basePrice" type="number" inputmode="decimal" min="0" step="any" aria-label="그룹 1회 정상가"><em>원</em></span></label></h2>
+        <div class="scroll"><table class="strat" id="ladder-g"></table></div>
+        <div class="pkfoot"><button type="button" data-add="g">+ 그룹 이용권 추가</button><span>칸에 숫자를 바로 넣으세요. 판매가를 넣으면 할인률이 자동으로 바뀝니다.</span></div>
+        <h2 style="margin-top:22px">개인레슨 이용권 설계 <label class="mini">1회 정상가 <span class="inp" style="width:120px"><input data-k="pBase" type="number" inputmode="decimal" min="0" step="any" aria-label="개인레슨 1회 정상가"><em>원</em></span></label></h2>
+        <div class="scroll"><table class="strat" id="ladder-p"></table></div>
+        <div class="pkfoot"><button type="button" data-add="p">+ 개인레슨 이용권 추가</button><span>판매가는 100원 단위로 반올림됩니다.</span></div>
+        <p class="note">월 의무 출석 = 횟수 ÷ 이용기간. 회원이 기간 안에 이용권을 모두 쓴다고 보고 계산합니다. 월 결제 건수는 활성회원이 기간이 끝나 다시 등록하는 건수, 월 매출은 그 결제 금액(판매가 × 결제 건수)입니다.</p>
+        <h2 style="margin-top:22px">회원 1명의 이용권이 기간 동안 나뉘는 모습 <small>월별 출석 횟수 · 그달에 소진되는 금액</small></h2>
+        <p class="dist-h">그룹 이용권</p>
+        <div class="scroll"><table class="dist" id="dist-g"></table></div>
+        <p class="dist-h">개인레슨 이용권</p>
+        <div class="scroll"><table class="dist" id="dist-p"></table></div>
+        <h2 style="margin-top:22px">주력 이용권 집중 판매 전략 <label class="mini">주력 판매 비중 <span class="inp"><input id="mainShare" type="number" inputmode="decimal" min="0" max="100" step="5"><em>%</em></span></label></h2>
+        <div class="scroll"><table class="strat" id="strat"></table></div>
+        <p class="note" id="strat-note"></p>
+      </div>
+
+      <div class="panel">
+        <h2>원장 역할에 따른 실제 이익 <small>같은 매출, 다른 계산</small></h2>
+        <table class="pl" id="owner"></table>
+        <div id="ownerflag"></div>
+      </div>
+
+      <div class="panel">
+        <h2>매출 100원은 어디로 가나 <small>공급가 기준</small></h2>
+        <div class="bar" id="bar"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <div class="panel">
+        <h2>오픈 후 누적 현금흐름 <small>60개월 · 초기 시설투자 차감 후</small></h2>
+        <div class="scroll"><svg id="chart" viewBox="0 0 680 250" width="100%" style="min-width:520px" role="img" aria-label="누적 현금흐름 그래프"></svg></div>
+        <div id="cashflag"></div>
+      </div>
+
+      <div class="panel">
+        <h2>민감도 분석 <small>그룹 점유율 × 회당 단가 → 월 영업이익</small></h2>
+        <div class="scroll"><table class="sens" id="sens"></table></div>
+        <p class="note">테두리 칸이 현재 입력값입니다. 빨간 숫자는 적자 구간입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="mem-panel">
+    <h2>월별 회원 흐름과 결제 매출 <small>신규·재등록 회원을 직접 입력 · 이 브라우저에만 저장</small></h2>
+    <p class="note" style="margin-top:0">파란 줄만 입력하면 나머지는 자동으로 계산됩니다. 활성회원은 실제 숫자를 넣고, 비워 두면 회색 추정값(이용권이 아직 유효한 회원 수)을 씁니다. 신규와 재등록이 사는 이용권 비율이 다르면 같은 회원 수라도 결제 매출이 달라집니다.</p>
+    <div id="mem-g"></div>
+    <div id="mem-p"></div>
+    <h3 class="mem-h">그룹 + 개인레슨 합계</h3>
+    <div class="scroll"><table class="mem" id="mem-sum"></table></div>
+    <p class="note">* 결제 매출은 회원이 이용권을 결제한 달에 들어온 금액(현금 기준)입니다. 위 손익계산서의 매출도 결제 기준이지만, 회원 수가 일정한 정상 운영 달의 평균값이라 이 표의 달별 숫자와는 다를 수 있습니다. 재등록률 = 이번 달 재등록 ÷ 이번 달 이용권이 끝나는 회원(이용권 기간으로 계산). 기간 전에 미리 재등록하면 100%를 넘을 수 있습니다. 이탈률 = 1 − 재등록률(0% 아래는 0%).</p>
+  </div>
+
+  <div class="panel">
+    <h2>월별 실적 기록<small>실제 매출·지출을 입력하면 계획 대비 차이를 보여줍니다 · 이 브라우저에만 저장</small></h2>
+    <div class="scroll"><table class="act" id="act"></table></div>
+  </div>
+
+  <div class="foot">
+    <span>영업이익은 법인세·이자 차감 전 금액입니다. 감가상각은 인테리어 공사비·집기·장비·오픈비용을 정액 상각합니다. 회원권 매출은 출석과 상관없이 결제 기준(활성회원이 이용권을 다시 사는 금액의 월 평균)으로 잡았습니다. 보증금은 회수 자산으로 보고 현금흐름 그래프에서 제외했습니다.</span>
+  </div>
+</div>
+
+<script>
+const WK = 4.345;
+const SECTIONS = [
+  {id:"invest", title:"초기 투자", sum:p=>p.deposit+p.area*p.perPy+p.fixtures+p.equip+p.openEtc+p.working, fields:[
+    ["deposit","임대 보증금","만원","회수 가능한 자산"],
+    ["area","실평수","평","전용 면적 기준"],
+    ["perPy","평당 인테리어 공사비","만원/평",""],
+    ["fixtures","집기·가구·소품","만원","리셉션 가구, 락커, 거울, 조명·인테리어 소품, 비품"],
+    ["equip","운동 기구","만원","리포머·체어·매트·소도구 등"],
+    ["openEtc","오픈 비용","만원","간판, 오픈 마케팅, 프로그램 세팅"],
+    ["working","운전자금 준비액","만원","초기 적자를 버틸 현금"],
+    ["depYears","감가상각 기간","년"],
+  ]},
+  {id:"pkg", title:"그룹 회원권 설계", sum:p=>p.pkgMode?`평균 1회 ${wonW(pkgCalc(p,"g").wUnit)}`:"사용 안 함", fields:[
+    ["basePrice","그룹 1회 정상가","원","할인 전 1회 가격"],
+  ]},
+  {id:"ppkg", title:"개인레슨 회원권 설계", sum:p=>p.pkgMode?`평균 1회 ${wonW(pkgCalc(p,"p").wUnit)}`:"사용 안 함", fields:[
+    ["pBase","개인레슨 1회 정상가","원","할인 전 1회 가격"],
+    ["pReg","개인레슨 등록 회원 수","명","1년 동안 등록한 개인레슨 회원(누적)"],
+    ["pActiveRate","개인레슨 활성률","%","최근 30일 안에 개인레슨에 나온 회원 비율"],
+  ]},
+  {id:"revenue", title:"매출", sum:p=>R(p).gross, fields:[
+    ["gClasses","그룹수업 횟수","회/주","운영자가 정하는 주간 수업 수 (예: 하루 8타임 × 6일 = 48)"],
+    ["gCap","수업당 정원","명"],
+    ["gOcc","평균 점유율","%","정원 대비 실제 출석"],
+    ["gPrice","그룹 1회 환산 단가","만원","회원권 가격 ÷ 총 횟수"],
+    ["pSessions","개인레슨","회/월","1:1·2:1 레슨 합계"],
+    ["pPrice","개인레슨 1회 단가","만원"],
+    ["otherRev","기타 매출","만원/월","교육, 상품, 원데이 클래스"],
+    ["regMembers","그룹 등록 회원 수","명","1년 동안 등록한 그룹 회원(누적)"],
+    ["activeRate","그룹 활성률","%","최근 30일 안에 그룹수업에 나온 회원 비율"],
+    ["visits","활성회원 월 평균 그룹 출석","회/월","활성회원 1명이 한 달에 그룹수업에 나오는 횟수"],
+  ]},
+  {id:"variable", title:"변동비", sum:p=>R(p).variable, fields:[
+    ["gFee","그룹 강사료","만원/회"],
+    ["pFee","개인레슨 강사료","만원/회","레슨 1회당 지급"],
+    ["cardFee","카드·결제 수수료","%"],
+    ["otherCogs","기타 매출 원가율","%"],
+  ]},
+  {id:"fixed", title:"고정비 (월)", sum:p=>R(p).fixed, fields:[
+    ["rent","임대료","만원"],
+    ["commonArea","공용관리비 부과 면적","평","임대 계약 면적(공용 포함)"],
+    ["commonPerPy","평당 공용관리비","원/평",""],
+    ["@usage"],
+    ["@staff"],
+    ["iaRate","산재보험 요율","%","업종별 사업주 전액 부담"],
+    ["mkt","마케팅·광고","만원"],
+    ["supplies","소모품·장비 유지보수","만원"],
+    ["software","예약 프로그램","만원"],
+    ["miscFixed","세무·보험·기타","만원"],
+  ]},
+  {id:"owner", title:"원장 역할", sum:p=>p.ownerPay, fields:[
+    ["ownerPay","원장 적정 급여","만원/월","수업을 하든 운영만 하든 원장이 가져가야 할 몫"],
+    ["ownerGroup","원장 담당 그룹수업","회/주","원장이 직접 수업할 때만 반영"],
+    ["ownerPrivate","원장 담당 개인레슨","회/월","원장이 직접 수업할 때만 반영"],
+  ]},
+  {id:"ramp", title:"오픈 초기 램프업", sum:null, fields:[
+    ["rampStart","1개월차 매출 도달률","%","정상 매출 대비"],
+    ["rampMonths","정상 매출 도달 시점","개월차"],
+  ]},
+];
+const PRESETS = {
+  template:{commonArea:65,commonPerPy:15000,iaRate:0.7,retire:1,pFee:2.5,usage:[{name:"전기",amt:70},{name:"수도·가스",amt:15},{name:"통신·인터넷",amt:8},{name:"정수기 렌탈",amt:3},{name:"공기청정기·비데 렌탈",amt:6},{name:"보안(무인경비)",amt:8}],staffList:[{name:"매니저",sal:280,age:32},{name:"상담·안내",sal:220,age:27}],deposit:5000,area:40,perPy:130,fixtures:800,pkgMode:1,basePrice:35000,pBase:70000,pReg:60,targetOcc:65,mainShare:60,pkgs:[{n:10,disc:5,share:20,m:2},{n:20,disc:10,share:50,m:4},{n:30,disc:15,share:20,m:5},{n:50,disc:20,share:10,m:7}],ppkgs:[{n:10,disc:3,share:40,m:3},{n:20,disc:7,share:40,m:5},{n:30,disc:10,share:20,m:6}],equip:5800,openEtc:1500,working:3000,depYears:5,
+    gClasses:42,gCap:8,gOcc:60,gPrice:3.0,pSessions:150,pPrice:7,otherRev:100,regMembers:260,activeRate:66,pActiveRate:66,visits:8,
+    gFee:4,pComm:40,cardFee:2.0,otherCogs:40,
+    rent:550,maint:150,staff:600,mkt:300,supplies:80,software:40,miscFixed:100,
+    rampStart:35,rampMonths:9,vat:1,ownerTeach:1,ownerPay:400,ownerGroup:10,ownerPrivate:40,memLink:1},
+};
+// ---------- 페이지 설정 (build_calculators.py가 업종별 파일을 만들 때 TYPE을 바꿈) ----------
+const TYPE="barre"; // null = 세 업종 통합판(내부용) · "pilates" | "yoga" | "barre" = 공개용 업종 전용판
+const LINKS={kakao:"https://open.kakao.com/o/sZE82VSi", apply:"https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform", home:"https://ellastar.co.kr"}; // 카카오톡 채널·신청서 주소가 정해지면 여기만 바꿈
+const TYPE_INFO={pilates:{name:"필라테스",equip:"리포머·체어·바렐·매트·소도구 등"},yoga:{name:"요가",equip:"매트·볼스터·블록·소도구 등"},barre:{name:"바레",equip:"바(봉)·매트·소도구 등"}};
+const store = {
+  key(k){return (TYPE?TYPE+":":"")+k}, // 같은 사이트 안에서 업종별 페이지끼리 입력값이 섞이지 않게
+  get(k){try{return JSON.parse(localStorage.getItem(this.key(k)))}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(this.key(k),JSON.stringify(v))}catch(e){}}
+};
+const clone = o=>JSON.parse(JSON.stringify(o));
+// 빈 칸: 업종마다 다른 숫자는 0, 요율·기간 같은 기준값과 이용권 구성(횟수·기간)은 남겨 둠
+PRESETS.blank=(()=>{const b=clone(PRESETS.template), keep=["iaRate","retire","pkgMode","memLink","mainShare","depYears","cardFee","otherCogs","rampStart","rampMonths","vat","ownerTeach","visits"];
+  Object.keys(b).forEach(k=>{if(typeof b[k]==="number"&&!keep.includes(k)) b[k]=0;});
+  b.pkgs.forEach(x=>{x.disc=0;x.share=0;}); b.ppkgs.forEach(x=>{x.disc=0;x.share=0;});
+  b.usage.forEach(x=>x.amt=0); b.staffList.forEach(x=>{x.sal=0;}); return b;})();
+PRESETS.blank.loc={status:"",sido:"",sigungu:"",area:""};
+const BLANK=PRESETS.blank; delete PRESETS.template; // 예시값 없음: 모든 업종 숫자는 사용자가 직접 입력
+let P = Object.assign(clone(BLANK), store.get("snc-params")||{}); if(!P.loc) P.loc=clone(BLANK.loc);
+if(!Array.isArray(P.pkgs)||!P.pkgs.length) P.pkgs=clone(BLANK.pkgs);
+if(!Array.isArray(P.ppkgs)||!P.ppkgs.length) P.ppkgs=clone(BLANK.ppkgs);
+P.pkgs.forEach(k=>{if(!(k.m>0)) k.m=k.v>0?Math.max(1,Math.round(k.n/k.v)):3; delete k.v;});
+const SLOTS=TYPE?{[TYPE]:TYPE_INFO[TYPE].name}:{pilates:"필라테스",yoga:"요가",barre:"바레"};
+let preset = store.get("snc-preset"); if(!SLOTS[preset]) preset=TYPE||null; // 지금 작업 중인 업종 칸
+let ACT = store.get("snc-actuals")||[]; while(ACT.length<13) ACT.push({r:"",e:"",o:""}); // 0~11 = 1~12월, 12 = 사전 판매
+
+// 2026년 사업주 부담 요율 (국민연금 4.75%, 건강보험 3.595%, 장기요양 = 건강보험료의 13.14%, 고용보험 실업급여 0.9% + 고용안정·직업능력개발 0.25%(150인 미만))
+const INS={np:.0475,npMin:41,npMax:659,hi:.03595,ltc:.1314,ei:.009,eis:.0025};
+function insCalc(sal,age,p){
+  sal=Math.max(0,sal||0); age=age||0;
+  if(sal<=0) return {np:0,hi:0,ltc:0,ei:0,ia:0,ret:0,ins:0,total:0};
+  const np=age>=60?0:Math.min(INS.npMax,Math.max(INS.npMin,sal))*INS.np;
+  const hi=sal*INS.hi, ltc=hi*INS.ltc;
+  const ei=(age>=65?0:sal*INS.ei)+sal*INS.eis;
+  const ia=sal*(p.iaRate||0)/100, ret=p.retire?sal/12:0;
+  const ins=np+hi+ltc+ei+ia;
+  return {np,hi,ltc,ei,ia,ret,ins,total:sal+ins+ret};
+}
+function staffCalc(p){
+  const t={sal:0,np:0,hi:0,ltc:0,ei:0,ia:0,ret:0,ins:0,total:0};
+  (p.staffList||[]).forEach(x=>{const c=insCalc(x.sal,x.age,p); t.sal+=Math.max(0,x.sal||0); ["np","hi","ltc","ei","ia","ret","ins","total"].forEach(k=>t[k]+=c[k]);});
+  return t;
+}
+function R(p){
+  const v = p.vat?1.1:1;
+  const gSess = p.gClasses*WK;
+  const att = p.gAtt!==undefined&&p.gAtt!==null ? p.gAtt : gSess*p.gCap*p.gOcc/100;
+  const revG = att*p.gPrice, revP = p.pSessions*p.pPrice, revO = p.otherRev;
+  const gross = revG+revP+revO, net = gross/v;
+  const teach = !!p.ownerTeach;
+  const oG = teach?Math.min(gSess,p.ownerGroup*WK):0;
+  const oP = teach?Math.min(p.pSessions,p.ownerPrivate):0;
+  const vGroup = (gSess-oG)*p.gFee, vPriv = (p.pSessions-oP)*p.pFee, vCard = gross*p.cardFee/100, vOther = revO/v*p.otherCogs/100;
+  const variable = vGroup+vPriv+vCard+vOther;
+  const common = p.commonArea*p.commonPerPy/10000;
+  const usage = (p.usage||[]).reduce((a,x)=>a+Math.max(0,x.amt||0),0);
+  const st = staffCalc(p), staffCost = st.total;
+  const fixed = p.rent+common+usage+staffCost+p.ownerPay+p.mkt+p.supplies+p.software+p.miscFixed;
+  const capex = p.area*p.perPy+p.fixtures+p.equip+p.openEtc;
+  const dep = p.depYears>0?capex/(p.depYears*12):0;
+  const ebitda = net-variable-fixed, op = ebitda-dep;
+  const invest = p.deposit+capex+p.working;
+  const active = p.regMembers*p.activeRate/100;
+  const ownerSave = oG*p.gFee + oP*p.pFee;
+  const pActive = (p.pReg||0)*pRate(p)/100;
+  return {common,usage,st,staffCost,pActive,active,ownerSave,gSess,att,revG,revP,revO,gross,net,vGroup,vPriv,vCard,vOther,variable,fixed,capex,dep,ebitda,op,invest,v};
+}
+const wonW = x=>new Intl.NumberFormat("ko-KR").format(Math.round(x))+"원";
+function pkgCalc(p,kind="g"){
+  const base=kind==="p"?p.pBase:p.basePrice, list0=kind==="p"?p.ppkgs:p.pkgs;
+  const rows=(list0||[]).map(k=>{
+    const n=Math.max(1,Math.round(k.n||0)), disc=Math.min(100,Math.max(0,k.disc||0)), m=Math.max(1,Math.round(k.m||1));
+    const list=(base||0)*n, sale=Math.round(list*(1-disc/100)/100)*100;
+    return {n,disc,m,share:Math.max(0,k.share||0),v:n/m,list,sale,unit:sale/n};
+  });
+  const sTot=rows.reduce((a,r)=>a+r.share,0);
+  rows.forEach(r=>r.w=sTot>0?r.share/sTot:1/(rows.length||1));
+  const visits=rows.reduce((a,r)=>a+r.w*r.v,0);
+  const wUnit=visits>0?rows.reduce((a,r)=>a+r.w*r.v*r.unit,0)/visits:(rows[0]?rows[0].unit:0);
+  return {rows,sTot,visits,wUnit};
+}
+const pRate=p=>p.pActiveRate===undefined||p.pActiveRate===null?p.activeRate:p.pActiveRate;
+function derive(p){ // 회원권 설계 → 월 출석·주간 수업 수·점유율·1회 단가
+  if(!p.pkgMode) return p;
+  const k=pkgCalc(p), active=p.regMembers*p.activeRate/100, demand=active*k.visits;
+  const seats=p.gClasses*p.gCap*WK; // 수업 수는 운영자가 정함
+  p.gAtt=demand; // 매출은 결제 기준: 활성회원 × 이용권 비중 × 판매가 ÷ 기간 (= 출석 수 × 1회 단가), 자리 수와 상관없음
+  p.visits=k.visits; p.gDemand=demand; p.gSeats=seats;
+  p.gOcc=seats>0?demand/seats*100:0;
+  p.gPrice=k.wUnit/10000;
+  const pk=pkgCalc(p,"p");
+  p.pSessions=(p.pReg||0)*pRate(p)/100*pk.visits;
+  p.pPrice=pk.wUnit/10000;
+  return p;
+}
+function withShares(p,shares){const q=clone(p); q.pkgs.forEach((k,i)=>k.share=shares[i]); return derive(q);}
+function focusShares(p,j,main){
+  const rest=p.pkgs.map((k,i)=>i===j?0:Math.max(0,k.share||0)), rt=rest.reduce((a,b)=>a+b,0), others=p.pkgs.length-1;
+  return p.pkgs.map((k,i)=>i===j?main:others>0?(100-main)*(rt>0?rest[i]/rt:1/others):0);
+}
+function bepActive(p){
+  const rate=p.activeRate/100; if(!(rate>0)) return null;
+  const x=bisect(a=>{const q=clone(p); q.regMembers=a/rate; return R(derive(q)).op;},0,5000);
+  return x===null?null:Math.ceil(x);
+}
+function scaled(p,r){return Object.assign({},p,{gOcc:p.gOcc*r,gAtt:p.gAtt!=null?p.gAtt*r:p.gAtt,pSessions:p.pSessions*r,otherRev:p.otherRev*r})}
+function ramp(p,m){ // m = 1-based month
+  const s=p.rampStart/100, n=Math.max(1,p.rampMonths);
+  if(m>=n) return 1;
+  return s+(1-s)*(m-1)/(n-1||1);
+}
+function simulate(p,months=60){
+  const r0=R(p); let cum=-r0.capex, pts=[cum], pay=null, minCum=cum;
+  for(let m=1;m<=months;m++){
+    cum+=R(scaled(p,ramp(p,m))).ebitda; pts.push(cum);
+    if(cum<minCum) minCum=cum;
+    if(pay===null && cum>=0) pay=m;
+  }
+  return {pts,pay,deficit:Math.max(0,-(minCum+r0.capex))};
+}
+function bisect(f,lo,hi){ // f increasing, find root
+  if(f(hi)<0) return null; if(f(lo)>=0) return lo;
+  for(let i=0;i<50;i++){const m=(lo+hi)/2; if(f(m)<0) lo=m; else hi=m;}
+  return hi;
+}
+const nf = new Intl.NumberFormat("ko-KR",{maximumFractionDigits:0});
+function won(x){
+  if(!isFinite(x)) return "—";
+  const s=x<0?"−":""; x=Math.abs(Math.round(x));
+  if(x>=10000){const e=Math.floor(x/10000), r=x%10000; return s+e+"억"+(r?" "+nf.format(r)+"만":"")+"원";}
+  return s+nf.format(x)+"만원";
+}
+const pct = x=>(isFinite(x)?(x*100).toFixed(1):"—")+"%";
+const $ = id=>document.getElementById(id);
+
+const SIDO=["서울","부산","대구","인천","광주","대전","울산","세종","경기","강원","충북","충남","전북","전남","경북","경남","제주","해외"];
+function buildLoc(box){
+  const d=document.createElement("details"); d.open=true;
+  const opt=(arr,v)=>`<option value="">선택</option>`+arr.map(x=>`<option${x===v?" selected":""}>${x}</option>`).join("");
+  d.innerHTML=`<summary><span>창업 위치 · 지금 상태</span><span class="tot" id="tot-loc"></span></summary><div class="fields">
+    <div class="row"><label for="loc-status">지금 상태<small>예비 창업자도, 이미 운영 중인 원장도 적어 주세요</small></label><div class="inp"><select id="loc-status" data-loc="status" style="width:100%;border:0;background:transparent;color:var(--fg);padding:6px 8px;font:inherit">${opt(["창업 준비 중","운영 중","확장(2호점·업종 추가) 고민"],P.loc.status)}</select></div></div>
+    <div class="row"><label for="loc-sido">시·도</label><div class="inp"><select id="loc-sido" data-loc="sido" style="width:100%;border:0;background:transparent;color:var(--fg);padding:6px 8px;font:inherit">${opt(SIDO,P.loc.sido)}</select></div></div>
+    <div class="row"><label for="loc-sigungu">시·군·구<small>예: 강남구, 성남시 분당구</small></label><div class="inp"><input id="loc-sigungu" data-loc="sigungu" type="text" style="text-align:left" value="${(P.loc.sigungu||"").replace(/"/g,"&quot;")}"></div></div>
+    <div class="row"><label for="loc-area">동·상권·역<small>예: 역삼동, 판교역 상권 (예정지면 후보지)</small></label><div class="inp"><input id="loc-area" data-loc="area" type="text" style="text-align:left" value="${(P.loc.area||"").replace(/"/g,"&quot;")}"></div></div>
+  </div>`;
+  box.appendChild(d);
+}
+function buildInputs(){
+  const box=$("inputs"); box.innerHTML=""; buildLoc(box);
+  SECTIONS.forEach((s,i)=>{
+    const d=document.createElement("details"); if(i<4) d.open=true;
+    d.innerHTML=`<summary><span>${s.title}</span><span class="tot" id="tot-${s.id}"></span></summary><div class="fields"></div>`;
+    const f=d.querySelector(".fields");
+    if(s.id==="revenue"){
+      f.insertAdjacentHTML("beforeend",`<label class="toggle"><input type="checkbox" id="vat"> 판매가에 부가세 포함 (매출 ÷ 1.1로 공급가 계산)</label>`);
+      f.insertAdjacentHTML("beforeend",`<label class="toggle"><input type="checkbox" id="memLink"> 등록 회원 수·활성률을 아래 '월별 회원 흐름' 표에서 가져오기 (표에 입력이 있을 때)</label>`);
+    }
+    if(s.id==="pkg"){
+      f.insertAdjacentHTML("beforeend",`<label class="toggle"><input type="checkbox" id="pkgMode"> 회원권 설계로 매출·수업 수 계산 (그룹·개인레슨)</label>`);
+    }
+    if(s.id==="owner"){
+      f.insertAdjacentHTML("beforeend",`<label class="toggle"><input type="checkbox" id="ownerTeach"> 원장이 직접 수업함 (담당 수업의 강사료가 빠짐)</label>`);
+    }
+    s.fields.forEach(([k,l,u,h])=>{
+      if(k==="@usage"){f.insertAdjacentHTML("beforeend",`<p class="sub-h">사용 관리비 <span id="usage-tot"></span></p><table class="lst" id="lst-usage"></table><div class="pkfoot"><button type="button" data-ladd="usage">+ 항목 추가</button><span>전기·수도·통신·렌탈 등 매달 쓰는 만큼 내는 비용</span></div>`); return;}
+      if(k==="@staff"){f.insertAdjacentHTML("beforeend",`<p class="sub-h">고정 인건비 <span id="staff-tot"></span></p><table class="lst" id="lst-staff"></table><div class="pkfoot"><button type="button" data-ladd="staffList">+ 직원 추가</button><label class="toggle" style="font-size:12px"><input type="checkbox" id="retire"> 퇴직충당금 포함 (월 급여 ÷ 12)</label></div><p class="note" id="staff-note" style="margin-top:4px"></p>`); return;}
+      f.insertAdjacentHTML("beforeend",`<div class="row" id="row-${k}"><label for="in-${k}">${l}<small id="h-${k}">${h||""}</small></label><div class="inp"><input id="in-${k}" type="number" inputmode="decimal" step="any" min="0" data-k="${k}"><em>${u}</em></div></div>`);
+    });
+    if(s.id==="pkg"||s.id==="ppkg"){
+      const kd=s.id==="pkg"?"g":"p";
+      f.insertAdjacentHTML("beforeend",`<div class="scroll"><table class="pk" id="pk-${kd}"></table></div><div class="pkfoot"><button type="button" data-add="${kd}">+ 이용권 추가</button><span id="pk-sum-${kd}"></span></div>`);
+    }
+    box.appendChild(d);
+  });
+  box.addEventListener("click",e=>{
+    const la=e.target.dataset.ladd, ld=e.target.dataset.ldel;
+    if(la){P[la].push(la==="usage"?{name:"",amt:0}:{name:"",sal:250,age:30}); buildLists(); store.set("snc-params",P); render(); return;}
+    if(ld!==undefined){P[e.target.dataset.list].splice(+ld,1); buildLists(); store.set("snc-params",P); render(); return;}
+    const kd=e.target.dataset.add||e.target.dataset.kind, L=kd==="p"?P.ppkgs:P.pkgs;
+    if(e.target.dataset.add){
+      const last=L[L.length-1]||{n:0,disc:0,m:2};
+      L.push({n:last.n+10,disc:Math.min(50,last.disc+5),share:0,m:last.m+2});
+    } else if(e.target.dataset.del!==undefined){
+      if(L.length<=1) return; L.splice(+e.target.dataset.del,1);
+    } else return;
+    buildPkg(); store.set("snc-params",P); render();
+  });
+  box.addEventListener("input",e=>{
+    const k=e.target.dataset.k, pk=e.target.dataset.pk, ls=e.target.dataset.list;
+    if(e.target.dataset.loc){P.loc[e.target.dataset.loc]=e.target.value; store.set("snc-params",P); locTot(); return;}
+    if(ls&&e.target.dataset.i!==undefined){const f=e.target.dataset.f; P[ls][+e.target.dataset.i][f]=f==="name"?e.target.value:(parseFloat(e.target.value)||0);}
+    else if(e.target.id==="retire"){P.retire=e.target.checked?1:0;}
+    else if(pk!==undefined){setPk(e.target);}
+    else if(k){P[k]=parseFloat(e.target.value)||0;}
+    else if(e.target.id==="pkgMode"){P.pkgMode=e.target.checked?1:0;}
+    else if(e.target.id==="vat"){P.vat=e.target.checked?1:0;}
+    else if(e.target.id==="memLink"){P.memLink=e.target.checked?1:0;}
+    else if(e.target.id==="ownerTeach"){P.ownerTeach=e.target.checked?1:0;}
+    store.set("snc-params",P); render();
+  });
+}
+function buildLists(){
+  const esc=t=>String(t||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  $("lst-usage").innerHTML=`<thead><tr><th>항목</th><th>월 금액(만원)</th><th></th></tr></thead><tbody>`+
+    P.usage.map((x,i)=>`<tr><td><input class="t" data-list="usage" data-i="${i}" data-f="name" value="${esc(x.name)}" placeholder="항목 이름" aria-label="사용 관리비 항목"></td><td><input data-list="usage" data-i="${i}" data-f="amt" type="number" inputmode="decimal" min="0" step="any" value="${x.amt}" aria-label="월 금액"></td><td><button type="button" class="x" data-list="usage" data-ldel="${i}" aria-label="항목 삭제">×</button></td></tr>`).join("")+`</tbody>`;
+  $("lst-staff").innerHTML=`<thead><tr><th>직무</th><th>월 급여(만원)</th><th>나이</th><th>사업주 4대보험 · 월 총비용</th><th></th></tr></thead><tbody>`+
+    P.staffList.map((x,i)=>`<tr><td><input class="t" data-list="staffList" data-i="${i}" data-f="name" value="${esc(x.name)}" placeholder="직무" aria-label="직무"></td><td><input data-list="staffList" data-i="${i}" data-f="sal" type="number" inputmode="decimal" min="0" step="any" value="${x.sal}" aria-label="월 급여"></td><td><input data-list="staffList" data-i="${i}" data-f="age" type="number" inputmode="numeric" min="15" step="1" value="${x.age}" style="width:42px" aria-label="나이"></td><td class="calc" id="st-${i}"></td><td><button type="button" class="x" data-list="staffList" data-ldel="${i}" aria-label="직원 삭제">×</button></td></tr>`).join("")+`</tbody>`;
+}
+function syncLists(r){
+  $("usage-tot").textContent=won(r.usage);
+  const f1=x=>(Math.round(x*10)/10).toLocaleString("ko-KR");
+  P.staffList.forEach((x,i)=>{const c=insCalc(x.sal,x.age,P), el=$("st-"+i); if(!el) return;
+    el.title=`국민연금 ${f1(c.np)}만 · 건강 ${f1(c.hi)}만 · 장기요양 ${f1(c.ltc)}만 · 고용 ${f1(c.ei)}만 · 산재 ${f1(c.ia)}만${P.retire?` · 퇴직충당 ${f1(c.ret)}만`:""}`;
+    el.innerHTML=`+${f1(c.ins)}만 → ${won(c.total)}<small>${x.age>=65?"연금·실업급여 제외":x.age>=60?"국민연금 제외(만 60세 이상)":"4대보험 전부 적용"}</small>`;});
+  const t=r.st;
+  $("staff-tot").textContent=won(t.total);
+  $("staff-note").textContent=`급여 ${won(t.sal)} + 사업주 4대보험 ${f1(t.ins)}만원 (연금 ${f1(t.np)} · 건강 ${f1(t.hi)} · 요양 ${f1(t.ltc)} · 고용 ${f1(t.ei)} · 산재 ${f1(t.ia)})${P.retire?` + 퇴직충당 ${f1(t.ret)}만원`:""}. 2026년 요율, 국민연금은 기준소득월액 41만~659만원 범위로 계산. 만 60세 이상은 국민연금, 만 65세 이후 새로 채용한 경우 실업급여 보험료가 빠집니다.`;
+  $("h-commonPerPy").textContent=`공용관리비 ${won(r.common)}`;
+}
+function setPk(el){
+  const kd=el.dataset.kind, L=kd==="p"?P.ppkgs:P.pkgs, x=L[+el.dataset.pk], f=el.dataset.pf, v=parseFloat(el.value)||0;
+  if(f==="sale"){const list=(kd==="p"?P.pBase:P.basePrice)*Math.max(1,Math.round(x.n||0)); x.disc=list>0?Math.max(0,Math.round((1-v/list)*10000)/100):0;}
+  else x[f]=v;
+}
+function buildLadders(){
+  ["g","p"].forEach(kd=>{
+    const L=kd==="p"?P.ppkgs:P.pkgs;
+    const inp=(i,f,v,lab,cls="")=>`<input class="${cls}" data-kind="${kd}" data-pk="${i}" data-pf="${f}" type="number" inputmode="decimal" min="0" step="any" value="${v}" aria-label="${lab}">`;
+    $("ladder-"+kd).innerHTML=`<thead><tr><th>이용권</th><th>정상가</th><th>할인</th><th>판매가</th><th>1회 단가</th><th>이용기간</th><th>월 의무 출석</th><th>판매 비중</th><th>월 결제 건수</th><th>월 매출</th><th></th></tr></thead><tbody>`+
+      L.map((k,i)=>`<tr><td class="ed">${inp(i,"n",k.n,"횟수")}<span class="unit">회</span></td><td id="ld-${kd}-${i}-list"></td><td class="ed">${inp(i,"disc",k.disc,"할인률")}<span class="unit">%</span></td><td class="ed">${inp(i,"sale","","판매가","w")}<span class="unit">원</span></td><td id="ld-${kd}-${i}-unit"></td><td class="ed">${inp(i,"m",k.m,"이용기간")}<span class="unit">개월</span></td><td id="ld-${kd}-${i}-v"></td><td class="ed">${inp(i,"share",k.share,"판매 비중")}<span class="unit">%</span></td><td id="ld-${kd}-${i}-buys"></td><td id="ld-${kd}-${i}-rev"></td><td><button type="button" class="x" data-kind="${kd}" data-del="${i}" aria-label="${k.n}회 이용권 삭제">×</button></td></tr>`).join("")+
+      `</tbody><tfoot><tr><td>합계 · 평균</td><td></td><td></td><td></td><td id="ld-${kd}-unit"></td><td></td><td id="ld-${kd}-v"></td><td id="ld-${kd}-share"></td><td id="ld-${kd}-buys"></td><td id="ld-${kd}-rev"></td><td></td></tr></tfoot>`;
+  });
+}
+function buildPkg(){
+  buildLadders();
+  ["g","p"].forEach(kd=>{
+    const L=kd==="p"?P.ppkgs:P.pkgs;
+    const inp=(i,f,v,lab)=>`<input data-kind="${kd}" data-pk="${i}" data-pf="${f}" type="number" inputmode="decimal" min="0" step="any" value="${v}" aria-label="${lab}">`;
+    $("pk-"+kd).innerHTML=`<thead><tr><th>횟수</th><th>할인 %</th><th title="이용권 사용 기한">기간(월)</th><th title="전체 판매 중 이 이용권 비율">비중 %</th><th>판매가 · 1회 · 월 의무</th><th></th></tr></thead><tbody>`+
+      L.map((k,i)=>`<tr><td>${inp(i,"n",k.n,"횟수")}</td><td>${inp(i,"disc",k.disc,"할인률")}</td><td>${inp(i,"m",k.m,"이용기간 개월")}</td><td>${inp(i,"share",k.share,"판매 비중")}</td><td class="price" id="pk-${kd}-${i}"></td><td><button type="button" class="x" data-kind="${kd}" data-del="${i}" aria-label="${k.n}회 이용권 삭제">×</button></td></tr>`).join("")+`</tbody>`;
+  });
+}
+const DERIVED=["gOcc","gPrice","visits","pSessions","pPrice"];
+const HINTS={}; SECTIONS.forEach(s=>s.fields.forEach(([k,,,h])=>HINTS[k]=h||""));
+const f1x=v=>(Math.round(v*10)/10).toLocaleString("ko-KR");
+function occHint(){
+  if(!(P.gSeats>0)) return "그룹수업 횟수를 넣으면 계산됩니다";
+  const s=`월 출석 ${f0x(Math.min(P.gDemand,P.gSeats))}회 ÷ 자리 ${f0x(P.gSeats)}석(주 ${P.gClasses}회 × 정원 ${P.gCap}명 × 4.345주)`;
+  return P.gDemand>P.gSeats?`⚠ 자리 부족: 회원 출석 ${f0x(P.gDemand)}회가 자리 ${f0x(P.gSeats)}석보다 많음 · 매출은 결제 기준이라 그대로 잡히지만 수업을 늘려야 함`:s;
+}
+const f0x=v=>nf.format(Math.round(v));
+function syncPkg(){
+  const on=!!P.pkgMode, k=pkgCalc(P);
+  DERIVED.forEach(f=>{const el=$("in-"+f); el.disabled=on; $("row-"+f).classList.toggle("derived",on);
+    $("h-"+f).textContent=on?(f==="gPrice"?`이용권 가중 평균 1회 객단가 ${wonW(P.gPrice*10000)}`:f==="pPrice"?`이용권 가중 평균 1회 객단가 ${wonW(P.pPrice*10000)}`:f==="gOcc"?occHint():f==="pSessions"?`개인 활성회원 ${f1x((P.pReg||0)*pRate(P)/100)}명 × 1명 월 ${f1x(pkgCalc(P,"p").visits)}회`:f==="visits"?"그룹 이용권 비중으로 계산한 1명의 월 출석":"회원권 설계에서 자동 계산"):HINTS[f];
+    if(on&&document.activeElement!==el) el.value=(+P[f]).toFixed(f==="gPrice"||f==="pPrice"?2:1);});
+  ["basePrice","pBase","pReg","pActiveRate"].forEach(f=>{$("in-"+f).disabled=!on;});
+  const L=memLinkInfo();
+  ["regMembers","activeRate","pReg","pActiveRate"].forEach(f=>{const el=$("in-"+f); if(!el) return; const lk=!!(L&&L[f]!==undefined);
+    el.disabled=lk||(!on&&(f==="pReg"||f==="pActiveRate")); $("row-"+f).classList.toggle("derived",lk);
+    $("h-"+f).textContent=lk?`월별 회원 흐름 표 ${MLAB[L.t]} 기준 (${L[f+"Note"]})`:HINTS[f];
+    if(lk&&document.activeElement!==el) el.value=f.endsWith("Rate")?(+P[f]).toFixed(1):P[f];});
+  document.querySelectorAll("[data-pk]").forEach(el=>{el.disabled=!on;
+    if(el===document.activeElement) return;
+    const L=el.dataset.kind==="p"?P.ppkgs:P.pkgs, x=L[+el.dataset.pk]; if(!x) return;
+    if(el.dataset.pf==="sale"){const c=pkgCalc(P,el.dataset.kind).rows[+el.dataset.pk]; el.value=c?c.sale:"";}
+    else el.value=x[el.dataset.pf];});
+  document.querySelectorAll("[data-k]").forEach(el=>{if(el!==document.activeElement&&!el.disabled&&String(el.value)!==String(P[el.dataset.k])) el.value=P[el.dataset.k];});
+  ["g","p"].forEach(kd=>{const c0=pkgCalc(P,kd);
+    c0.rows.forEach((r,i)=>{const c=$(`pk-${kd}-${i}`); if(c) c.innerHTML=`${wonW(r.sale)}<small>1회 ${wonW(r.unit)} · 월 ${+r.v.toFixed(1)}회</small>`;});
+    $("pk-sum-"+kd).textContent=`비중 합계 ${Math.round(c0.sTot)}%${Math.round(c0.sTot)!==100?" (100%로 환산)":""} · 평균 1회 ${wonW(c0.wUnit)} · 회원 월 ${c0.visits.toFixed(1)}회`;});
+  $("h-perPy").textContent=`인테리어 공사비 ${won(P.area*P.perPy)}`;
+  $("pkg-panel").hidden=!on;
+}
+function drawPkg(r){
+  if(!P.pkgMode) return;
+  const active=P.regMembers*P.activeRate/100;
+  ["g","p"].forEach(kd=>{
+    const k=pkgCalc(P,kd), act=kd==="p"?(P.pReg||0)*pRate(P)/100:active;
+    let tc=0,trev=0;
+    const set=(id,t)=>{const e=$(id); if(e) e.textContent=t;};
+    k.rows.forEach((x,i)=>{const buys=act*x.w/x.m, rev=act*x.w*x.v*x.unit/10000; tc+=buys; trev+=rev;
+      set(`ld-${kd}-${i}-list`,wonW(x.list)); set(`ld-${kd}-${i}-unit`,wonW(x.unit)); set(`ld-${kd}-${i}-v`,`${+x.v.toFixed(1)}회`);
+      set(`ld-${kd}-${i}-buys`,`${buys.toFixed(1)}건`); set(`ld-${kd}-${i}-rev`,won(rev));});
+    set(`ld-${kd}-unit`,wonW(k.wUnit)); set(`ld-${kd}-v`,`${k.visits.toFixed(1)}회`); set(`ld-${kd}-share`,`${Math.round(k.sTot)}%`);
+    set(`ld-${kd}-buys`,`${tc.toFixed(1)}건`); set(`ld-${kd}-rev`,won(trev));
+    const maxM=Math.min(24,Math.max(...k.rows.map(x=>x.m)));
+    $("dist-"+kd).innerHTML=`<thead><tr><th>이용권</th>${Array.from({length:maxM},(_,i)=>`<th>${i+1}개월</th>`).join("")}</tr></thead><tbody>`+
+      k.rows.map(x=>{const b=Math.floor(x.n/x.m), extra=x.n-b*x.m;
+        return `<tr><td>${x.n}회권 · ${x.m}개월<small>${wonW(x.sale)}</small></td>`+Array.from({length:maxM},(_,i)=>{
+          if(i>=x.m) return `<td class="off"></td>`; const c=b+(i<extra?1:0);
+          return `<td class="on">${c}회<small>${wonW(c*x.unit)}</small></td>`;}).join("")+`</tr>`;}).join("")+`</tbody>`;
+  });
+  const scen=[{name:"현재 판매 비중",p:derive(clone(P)),cur:true,shares:P.pkgs.map(x=>x.share)}].concat(
+    P.pkgs.map((x,j)=>{const sh=focusShares(P,j,P.mainShare); return {name:`${Math.round(x.n)}회권 주력`,p:withShares(P,sh),shares:sh};}));
+  scen.forEach(c=>{c.r=R(c.p); c.bep=bepActive(c.p);});
+  const best=scen.reduce((a,c)=>c.r.op>a.r.op?c:a,scen[0]);
+  $("strat").innerHTML=`<thead><tr><th>판매 전략</th><th>평균 1회 단가</th><th>회원 월 출석</th><th>그룹 점유율</th><th>월 그룹 강사료</th><th>강사료 ÷ 그룹매출</th><th>월 그룹 매출</th><th>월 영업이익</th><th>손익분기 활성회원</th><th></th></tr></thead><tbody>`+
+    scen.map((c,i)=>`<tr class="${c.cur?"cur":""} ${c===best&&!c.cur?"best":""}"><td>${c.name}</td><td>${wonW(c.p.gPrice*10000)}</td><td>${c.p.visits.toFixed(1)}회</td><td>${c.p.gOcc.toFixed(1)}%</td><td>${won(c.r.vGroup)}</td><td>${pct(c.r.revG>0?c.r.vGroup/(c.r.revG/c.r.v):NaN)}</td><td>${won(c.r.revG)}</td><td class="${c.r.op<0?"neg":""}">${won(c.r.op)}</td><td>${c.bep===null?"—":c.bep+"명"}</td><td>${c.cur?"":`<button type="button" data-apply="${i}">적용</button>`}</td></tr>`).join("")+`</tbody>`;
+  $("strat").onclick=e=>{const i=e.target.dataset.apply; if(i===undefined) return;
+    const sh=scen[+i].shares; P.pkgs.forEach((x,j)=>x.share=Math.round(sh[j])); buildPkg(); store.set("snc-params",P); render();};
+  $("strat-note").textContent=`활성회원 ${Math.round(active)}명(등록 ${f0x(P.regMembers)}명 × 활성률 ${f1x(P.activeRate)}%) 기준. 주력 이용권을 ${P.mainShare}% 팔고 나머지는 현재 비중대로 나눴을 때입니다. 이용권마다 회원의 월 출석이 달라 점유율과 매출이 함께 바뀝니다. 주간 그룹수업은 입력한 ${P.gClasses}회로 고정하고 계산했습니다.`;
+}
+function locTot(){const t=$("tot-loc"); if(t) t.textContent=[P.loc.sido,P.loc.sigungu,P.loc.area].filter(Boolean).join(" ")||"미입력";}
+function fillInputs(){
+  ["status","sido","sigungu","area"].forEach(f=>{const el=$("loc-"+f); if(el) el.value=(P.loc&&P.loc[f])||"";}); locTot();
+  document.querySelectorAll("[data-k]").forEach(el=>el.value=P[el.dataset.k]);
+  $("vat").checked=!!P.vat; $("memLink").checked=P.memLink!==0; $("ownerTeach").checked=!!P.ownerTeach; $("retire").checked=!!P.retire; $("pkgMode").checked=!!P.pkgMode; $("mainShare").value=P.mainShare;
+  document.querySelectorAll("[data-preset]").forEach(b=>b.classList.toggle("on",b.dataset.preset===preset));
+}
+
+function memLinkInfo(){
+  if(P.memLink===0||typeof MEM==="undefined") return null;
+  let t=-1; ["g","p"].forEach(kd=>["nw","rr","act"].forEach(f=>MEM[kd][f].forEach((v,i)=>{if(v!==""&&v!==null&&i>t) t=i;})));
+  if(t<0) return null;
+  const g=memCalc("g").out[t], q=memCalc("p").out[t], L={t};
+  if(g.cum>0){L.regMembers=g.cum; L.activeRate=g.act/g.cum*100; L.regMembersNote=`신규 누적 ${f0x(g.cum)}명`; L.activeRateNote=`활성 ${f0x(g.act)}명 ÷ 누적 ${f0x(g.cum)}명${g.actIn?"":" · 활성은 추정값"}`;}
+  if(q.cum>0){L.pReg=q.cum; L.pActiveRate=q.act/q.cum*100; L.pRegNote=`신규 누적 ${f0x(q.cum)}명`; L.pActiveRateNote=`활성 ${f0x(q.act)}명 ÷ 누적 ${f0x(q.cum)}명${q.actIn?"":" · 활성은 추정값"}`;}
+  return L;
+}
+function render(){
+  const L=memLinkInfo(); if(L) ["regMembers","activeRate","pReg","pActiveRate"].forEach(f=>{if(L[f]!==undefined) P[f]=L[f];});
+  derive(P); syncPkg();
+  const r=R(P), sim=simulate(P);
+  SECTIONS.forEach(s=>{const t=$("tot-"+s.id); if(!t) return; const v=s.sum?s.sum(P):""; t.textContent=typeof v==="number"?won(v):v;});
+  const opm=r.op/r.net, roi=r.op*12/r.invest;
+
+  // KPIs
+  $("kpis").innerHTML=[
+    ["월 매출",won(r.gross),P.vat?`공급가 ${won(r.net)}`:"부가세 별도 입력"],
+    ["월 영업이익",`<span class="${r.op<0?"neg":""}">${won(r.op)}</span>`,`영업이익률 ${pct(opm)}`],
+    ["연 투자수익률 (ROI)",`<span class="${roi<0?"neg":""}">${isFinite(roi)?pct(roi):"—"}</span>`,`총투자 ${won(r.invest)} 대비`],
+    ["투자 회수 시점",!(r.invest>0)?"—":sim.pay?`${sim.pay}개월차`:"60개월 내 미회수",`보증금 제외 · 램프업 반영`],
+  ].map(([l,v,n])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="n">${n}</div></div>`).join("");
+  // P&L
+  const row=(l,v,cls="")=>`<tr class="${cls}"><td>${l}</td><td>${won(v)}</td><td>${r.gross?pct(v/r.gross):""}</td></tr>`;
+  $("pl").innerHTML=
+    row("그룹수업 매출",r.revG,"ind")+row("개인레슨 매출",r.revP,"ind")+row("기타 매출",r.revO,"ind")+
+    (P.vat?row("부가세",-(r.gross-r.net),"ind"):"")+
+    row("순매출 (공급가)",r.net,"sum")+
+    row("그룹 강사료",-r.vGroup,"ind")+row("개인레슨 강사료",-r.vPriv,"ind")+row("결제 수수료",-r.vCard,"ind")+row("기타 원가",-r.vOther,"ind")+
+    row("공헌이익",r.net-r.variable,"sum")+
+    row("임대료",-P.rent,"ind")+row("공용관리비",-r.common,"ind")+row("사용 관리비",-r.usage,"ind")+row("고정 인건비 (4대보험 포함)",-r.staffCost,"ind")+row("원장 급여",-P.ownerPay,"ind")+row("마케팅",-P.mkt,"ind")+row("기타 고정비",-(P.supplies+P.software+P.miscFixed),"ind")+
+    `<tr class="exp"><td>월 지출 총액<small>변동비 ${won(r.variable)} + 고정비 ${won(r.fixed)} · 감가상각 제외 · 실적 기록의 '실제 지출'과 비교</small></td><td>${won(-(r.variable+r.fixed))}</td><td>${pct(-(r.variable+r.fixed)/r.gross)}</td></tr>`+
+    row("EBITDA (현금 영업이익)",r.ebitda,"sum")+
+    row("감가상각",-r.dep,"ind")+
+    row("영업이익",r.op,"sum");
+  // health chips
+  const labor=(r.vGroup+r.vPriv+r.staffCost+P.ownerPay)/r.net, rentR=(P.rent+r.common)/r.net, mktR=P.mkt/r.net;
+  const seats=r.gSess*P.gCap, memOcc=seats>0?r.active*P.visits/seats:0;
+  const grade=(x,g,w,rev)=>rev?(x>=g?"good":x>=w?"warn":"bad"):(x<=g?"good":x<=w?"warn":"bad");
+  const lab={good:"양호",warn:"주의",bad:"위험"};
+  const chips=[
+    ["임대료·공용관리비 비율",pct(rentR),grade(rentR,.15,.22),"≤15%"],
+    ["총 인건비 비율",pct(labor),grade(labor,.40,.50),"≤40%"],
+    ["마케팅비 비율",pct(mktR),grade(mktR,.08,.12),"≤8%"],
+    ["영업이익률",pct(opm),grade(opm,.15,.05,true),"≥15%"],
+    ["그룹 평균 출석",`${(P.gCap*P.gOcc/100).toFixed(1)}명`,grade(P.gOcc/100,.65,.45,true),"점유 ≥65%"],
+    ["회원 수로 채울 수 있는 점유율",pct(memOcc),memOcc>=P.gOcc/100?"good":memOcc>=P.gOcc/100*.8?"warn":"bad",`${P.pkgMode?"실제":"입력"} 점유율 ${(+P.gOcc).toFixed(1)}%`],
+    ["그룹 회원 월 객단가",won(r.active>0?r.revG/r.active:0),"good",`활성 ${Math.round(r.active)}명`],
+    ["개인레슨 회원 월 객단가",P.pkgMode&&r.pActive>0?won(r.revP/r.pActive):"—","good",P.pkgMode?`활성 ${Math.round(r.pActive)}명`:"회원권 설계 사용 시"],
+  ];
+  $("chips").innerHTML=chips.map(([l,v,g,b],i)=>`<div class="chip"><span>${l}${b?` <small style="color:var(--muted)">${b}</small>`:""}</span><b>${v}</b>${i<6?`<span class="pill ${g}">${lab[g]}</span>`:"<span></span>"}</div>`).join("");
+  // BEP
+  const cmr=(r.net-r.variable)/r.net;
+  const bepNet=cmr>0?(r.fixed+r.dep)/cmr:NaN;
+  const occ=bisect(x=>R(Object.assign({},P,{gOcc:x,gAtt:null})).op,0,300);
+  const scale=bisect(x=>R(scaled(P,x)).op,0,5);
+  const bepA=P.pkgMode?bepActive(P):null;
+  $("bep").innerHTML=[
+    ["손익분기 월 매출",isFinite(bepNet)?won(bepNet*r.v):"—",P.vat?"부가세 포함":""],
+    ["필요 그룹 점유율",occ===null?"달성 불가":`${occ.toFixed(0)}%`,"개인레슨 현재 유지 시"],
+    ["손익분기 활성회원 수",P.pkgMode?(bepA===null?"—":`${bepA}명`):occ===null||!(P.visits>0)?"—":`${Math.ceil(r.gSess*P.gCap*occ/100/P.visits)}명`,`월 ${(+P.visits).toFixed(1)}회 출석${P.pkgMode?" · 주간 수업 수 고정":""} 기준 · 현재 ${Math.round(r.active)}명`],
+    ["손익분기 등록회원 수",P.pkgMode?(bepA===null||!(P.activeRate>0)?"—":`${Math.ceil(bepA/(P.activeRate/100))}명`):occ===null||!(P.visits>0)||!(P.activeRate>0)?"—":`${Math.ceil(r.gSess*P.gCap*occ/100/P.visits/(P.activeRate/100))}명`,`활성률 ${f1x(P.activeRate)}% 기준 · 현재 ${f0x(P.regMembers)}명`],
+    ["현재 매출 대비 BEP",scale===null?"—":pct(scale),"수요 전체가 같은 비율로 변할 때"],
+    ["안전한계율",isFinite(bepNet)?pct(1-bepNet/r.net):"—","매출이 이만큼 줄어도 흑자"],
+  ].map(([l,v,n])=>`<div class="chip"><span>${l}${n?` <small style="color:var(--muted)">${n}</small>`:""}</span><b>${v}</b><span></span></div>`).join("");
+  // allocation bar
+  const parts=[
+    ["강사비(변동)",r.vGroup+r.vPriv,"--c1"],["결제수수료·원가",r.vCard+r.vOther,"--c6"],
+    ["임대·관리",P.rent+r.common+r.usage,"--c3"],["고정 인건비",r.staffCost,"--c2"],["원장 급여",P.ownerPay,"--c7"],["마케팅",P.mkt,"--c4"],
+    ["기타 고정비",P.supplies+P.software+P.miscFixed,"--c5"],["감가상각",r.dep,"--c6"],["영업이익",Math.max(0,r.op),"--c8"],
+  ];
+  const tot=parts.reduce((a,b)=>a+b[1],0)||1;
+  $("bar").innerHTML=parts.map(([l,v,c])=>`<div title="${l} ${won(v)}" style="width:${v/tot*100}%;background:var(${c})"></div>`).join("");
+  $("legend").innerHTML=parts.map(([l,v,c])=>`<span><i style="background:var(${c})"></i>${l} <b>${r.net>0?Math.round(v/r.net*100)+"원":"—"}</b></span>`).join("")+
+    (r.op<0?`<span class="neg">적자 ${won(-r.op)} (매출 초과 비용)</span>`:"");
+  const rTeach=R(Object.assign({},P,{ownerTeach:1})), rMgmt=R(Object.assign({},P,{ownerTeach:0}));
+  const bookOp=rTeach.op+P.ownerPay;
+  const orow=(l,v,n,cls="")=>`<tr class="${cls}"><td>${l}${n?`<small style="display:block;color:var(--muted);font-size:11.5px">${n}</small>`:""}</td><td class="${v<0?"neg":""}">${won(v)}</td><td></td></tr>`;
+  $("owner").innerHTML=
+    orow("① 흔한 계산: 원장이 수업하고 급여는 0",bookOp,"원장의 노동이 공짜로 계산된 숫자")+
+    orow("② 원장이 수업 + 급여 반영",rTeach.op,`원장 담당 수업의 강사료 ${won(rTeach.ownerSave)} 절감`)+
+    orow("③ 원장은 운영만 + 급여 반영",rMgmt.op,"모든 수업을 강사가 진행",)+
+    `<tr class="sum"><td>①과 ③의 차이</td><td>${won(bookOp-rMgmt.op)}</td><td></td></tr>`;
+  $("ownerflag").innerHTML=P.ownerPay<=0
+    ?`<div class="flag warn">원장 급여가 0으로 입력되어 있습니다. 원장의 시간도 비용입니다. 운영만 해도 받아야 할 금액을 넣어 보세요.</div>`
+    :rMgmt.op<0&&bookOp>=0
+    ?`<div class="flag bad">원장이 수업을 빼는 순간 적자로 바뀌는 구조입니다. 지금의 이익은 사업 수익이 아니라 원장의 노동 수입에 가깝습니다.</div>`
+    :rMgmt.op<0
+    ?`<div class="flag bad">원장 급여를 반영하면 어떤 경우에도 적자입니다.</div>`
+    :`<div class="flag good">원장이 운영만 해도 흑자가 유지됩니다. 사업으로서 독립된 구조입니다.</div>`;
+  drawChart(sim,r);
+  // cash flag
+  const short=sim.deficit-P.working;
+  $("cashflag").innerHTML=sim.deficit===0
+    ?`<div class="flag good">오픈 첫 달부터 현금흐름이 플러스입니다. 운전자금 ${won(P.working)}은 여유 자금으로 남습니다.</div>`
+    :short>0?`<div class="flag bad">램프업 기간 누적 적자가 최대 ${won(sim.deficit)}까지 커집니다. 준비한 운전자금 ${won(P.working)}보다 ${won(short)} 부족합니다.</div>`
+    :`<div class="flag good">램프업 기간 누적 적자는 최대 ${won(sim.deficit)}이며, 준비한 운전자금 ${won(P.working)}으로 감당 가능합니다 (여유 ${won(-short)}).</div>`;
+  drawSens(r); drawActuals(r); drawPkg(r); syncLists(r); drawMem(); if(typeof slotStatus==="function") slotStatus();
+}
+
+function drawChart(sim,r){
+  const W=680,H=250,L=64,Rt=12,T=14,B=30;
+  const pts=sim.pts, n=pts.length-1;
+  let lo=Math.min(0,...pts), hi=Math.max(0,...pts);
+  const step=niceStep((hi-lo)/4); lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step; if(hi===lo) hi=lo+step;
+  const x=i=>L+(W-L-Rt)*i/n, y=v=>T+(H-T-B)*(hi-v)/(hi-lo);
+  let g="";
+  for(let v=lo; v<=hi+1e-6; v+=step){
+    g+=`<line x1="${L}" x2="${W-Rt}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v===0?1.5:1}" ${v===0?"":'stroke-dasharray="2 3"'}/>`;
+    g+=`<text x="${L-8}" y="${y(v)+4}" text-anchor="end">${shortWon(v)}</text>`;
+  }
+  for(let m=0;m<=n;m+=12) g+=`<text x="${x(m)}" y="${H-10}" text-anchor="middle">${m}개월</text>`;
+  const line=pts.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const area=line+`L${x(n)},${y(0)}L${x(0)},${y(0)}Z`;
+  g+=`<path d="${area}" fill="var(--accent)" opacity=".1"/>`;
+  g+=`<path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.2"/>`;
+  if(sim.pay){g+=`<line x1="${x(sim.pay)}" x2="${x(sim.pay)}" y1="${T}" y2="${H-B}" stroke="var(--good)" stroke-dasharray="4 3"/>`+
+    `<circle cx="${x(sim.pay)}" cy="${y(pts[sim.pay])}" r="4.5" fill="var(--good)"/>`+
+    `<text x="${Math.min(x(sim.pay)+6,W-90)}" y="${T+10}" style="fill:var(--good)">회수 ${sim.pay}개월차</text>`;}
+  g+=`<circle cx="${x(n)}" cy="${y(pts[n])}" r="4" fill="var(--accent)"/>`;
+  $("chart").innerHTML=g;
+}
+function niceStep(raw){if(raw<=0) return 1000; const p=Math.pow(10,Math.floor(Math.log10(raw))); const f=raw/p; return (f<=1?1:f<=2?2:f<=5?5:10)*p;}
+function shortWon(v){const a=Math.abs(v); const s=v<0?"−":""; return a>=10000?s+(a/10000).toFixed(a%10000?1:0)+"억":s+nf.format(a)+"만";}
+
+function drawSens(){
+  const occs=[40,50,60,70,80], mult=[.85,.9,1,1.1,1.15];
+  let h=`<tr><th>점유율 \\ 단가</th>${mult.map(m=>`<th>${(P.gPrice*m).toFixed(2)}만 (${m===1?"현재":(m>1?"+":"")+Math.round((m-1)*100)+"%"})</th>`).join("")}</tr>`;
+  const cur=occs.reduce((a,b)=>Math.abs(b-P.gOcc)<Math.abs(a-P.gOcc)?b:a);
+  occs.forEach(o=>{
+    h+=`<tr><th>${o}%</th>`+mult.map(m=>{const v=R(Object.assign({},P,{gOcc:o,gAtt:null,gPrice:P.gPrice*m})).op;
+      return `<td class="${o===cur&&m===1?"cur":""} ${v<0?"neg":""}">${won(v)}</td>`}).join("")+"</tr>";
+  });
+  $("sens").innerHTML=h;
+}
+
+function drawActuals(r){ // 실제 매출 = 그룹 결제 + 개인레슨 결제(월별 회원 흐름 표) + 기타 매출
+  const plan=r.gross, planCost=r.variable*1+r.fixed;
+  const mg=memCalc("g").out, mp=memCalc("p").out;
+  let sr=0,se=0,cnt=0,sg=0,sp=0,so=0,sPlan=0,sCost=0,srM=0,sOp=0,nOp=0;
+  let h=`<thead><tr><th>월</th><th>계획 매출</th><th>그룹 결제</th><th>개인레슨 결제</th><th>기타 매출</th><th>실제 매출 합계</th><th>계획 지출</th><th>실제 지출</th><th>실제 영업이익*</th><th>계획 대비</th></tr></thead><tbody>`;
+  [12,0,1,2,3,4,5,6,7,8,9,10,11].forEach(i=>{
+    const a=ACT[i], pre=i===12, t=pre?0:i+1, lab=pre?"사전 판매":`${i+1}월`;
+    const g=mg[t].cashN+mg[t].cashR, pv=mp[t].cashN+mp[t].cashR, hasMem=g+pv>0;
+    const oIn=a.o!==undefined&&a.o!==""&&isFinite(parseFloat(a.o));
+    const o=oIn?parseFloat(a.o):(hasMem&&!pre?P.otherRev:0);
+    const manual=parseFloat(a.r);
+    const rv=hasMem||oIn?g+pv+o:(isFinite(manual)?manual:NaN);
+    const ex=parseFloat(a.e), hasR=isFinite(rv), has=hasR&&isFinite(ex);
+    const op=has?rv/r.v-ex:null;
+    if(hasR){sr+=rv; sg+=g; sp+=pv; so+=hasMem||oIn?o:0;}
+    if(isFinite(ex)){se+=ex;} if(has){sOp+=op; nOp++;} if(hasR&&!pre){cnt++; srM+=rv; sPlan+=plan; sCost+=planCost;}
+    const ratio=hasR&&!pre?rv/plan:null;
+    h+=`<tr><td>${lab}</td><td>${pre?"—":won(plan)}</td><td>${hasMem?won(g):"—"}</td><td>${hasMem?won(pv):"—"}</td>
+      <td><input id="ao-${i}" data-i="${i}" data-f="o" type="number" inputmode="decimal" value="${oIn?a.o:""}" placeholder="${hasMem&&!pre?P.otherRev:0}" aria-label="${lab} 기타 매출" style="width:72px"></td>
+      <td style="font-weight:600">${hasR?won(rv):"—"}${!hasMem&&!oIn&&isFinite(manual)?`<small style="display:block;color:var(--muted);font-size:10.5px">직접 입력값</small>`:""}</td><td>${pre?"—":won(planCost)}</td>
+      <td><input id="ae-${i}" data-i="${i}" data-f="e" type="number" inputmode="decimal" value="${a.e}" aria-label="${lab} 실제 지출"></td>
+      <td class="${op!==null&&op<0?"neg":""}">${op===null?"—":won(op)}</td>
+      <td>${ratio===null?"—":`<span class="pill ${ratio>=1?"good":ratio>=.85?"warn":"bad"}">${Math.round(ratio*100)}%</span>`}</td></tr>`;
+  });
+  h+=`</tbody><tfoot><tr><td>합계 (${cnt}개월${ACT[12]&&isFinite(parseFloat(ACT[12].e))||mg[0].pay+mp[0].pay>0?" + 사전 판매":""})</td><td>${won(sPlan)}</td><td>${won(sg)}</td><td>${won(sp)}</td><td>${won(so)}</td><td>${won(sr)}</td><td>${won(sCost)}</td><td>${won(se)}</td><td class="${sOp<0?"neg":""}">${nOp?won(sOp):"—"}</td><td>${cnt&&sPlan?Math.round(srM/sPlan*100)+"%":"—"}</td></tr></tfoot>`;
+  const t=$("act"), focus=document.activeElement&&document.activeElement.id;
+  t.innerHTML=h;
+  if(focus&&/^a[eo]-/.test(focus)&&$(focus)){const el=$(focus); el.focus(); const l=el.value.length; try{el.setSelectionRange(l,l)}catch(e){}}
+  const note=`* 실제 매출 합계 = 그룹 결제 + 개인레슨 결제(위 '월별 회원 흐름' 표의 결제 매출) + 기타 매출. 기타 매출 칸을 비우면 회원 흐름이 있는 달은 계획값 ${won(P.otherRev)}을 씁니다. 실제 영업이익 = 실제 매출${P.vat?"(공급가 환산)":""} − 실제 지출(강사비·임대료·인건비 등 모든 운영비 합산). 합계의 영업이익은 지출까지 입력한 달만 더하고, 계획 대비 합계에는 사전 판매를 넣지 않습니다. 계획 매출은 정상 운영 달의 평균 결제액이라, 오픈 직후처럼 결제가 몰린 달은 계획 대비가 높게 나올 수 있습니다. 계획 월 지출(감가상각 제외)은 ${won(planCost)}입니다.`;
+  if(!$("act-note")) t.parentElement.insertAdjacentHTML("afterend",`<p class="note" id="act-note">${note}</p>`); else $("act-note").innerHTML=note;
+}
+$("act").addEventListener("change",e=>{
+  const i=e.target.dataset.i, f=e.target.dataset.f; if(i===undefined) return;
+  ACT[i][f]=e.target.value; store.set("snc-actuals",ACT); drawActuals(R(P));
+});
+
+// ---------- 월별 회원 흐름 (사전 판매 + 1~12개월) ----------
+const MN=13, MLAB=["사전 판매"].concat(Array.from({length:12},(_,i)=>`${i+1}월`));
+const memBlank=()=>({nw:Array(MN).fill(""),rr:Array(MN).fill(""),act:Array(MN).fill(""),mixN:[],mixR:[]});
+let MEM=store.get("snc-members")||{g:memBlank(),p:memBlank()};
+["g","p"].forEach(kd=>{const b=memBlank(); MEM[kd]=Object.assign(b,MEM[kd]||{}); ["nw","rr","act"].forEach(f=>{while(MEM[kd][f].length<MN) MEM[kd][f].push("");});});
+const num=v=>{const x=parseFloat(v); return isFinite(x)&&x>0?x:0;};
+function memMix(kd){
+  const rows=pkgCalc(P,kd).rows, M=MEM[kd];
+  rows.forEach((r,i)=>{if(M.mixN[i]===undefined||M.mixN[i]==="") M.mixN[i]=Math.round(r.share); if(M.mixR[i]===undefined||M.mixR[i]==="") M.mixR[i]=Math.round(r.share);});
+  M.mixN.length=rows.length; M.mixR.length=rows.length;
+  const norm=a=>{const s=a.reduce((x,y)=>x+num(y),0); return {s,w:a.map(y=>s>0?num(y)/s:1/(a.length||1))};};
+  const N=norm(M.mixN), Rr=norm(M.mixR);
+  const avg=w=>rows.reduce((a,r,i)=>a+w[i]*r.sale,0);
+  return {rows,N,R:Rr,avgN:avg(N.w),avgR:avg(Rr.w)};
+}
+function memCalc(kd){
+  const M=MEM[kd], x=memMix(kd), out=[];
+  let cum=0;
+  for(let t=0;t<MN;t++){
+    const n=num(M.nw[t]), r=num(M.rr[t]); cum+=n;
+    let exp=0, valid=0;
+    x.rows.forEach((k,i)=>{
+      for(let s=0;s<t;s++) if(t-s===k.m) exp+=num(M.nw[s])*x.N.w[i]+num(M.rr[s])*x.R.w[i];
+      for(let s=Math.max(0,t-k.m+1);s<=t;s++) valid+=num(M.nw[s])*x.N.w[i]+num(M.rr[s])*x.R.w[i];
+    });
+    const actIn=M.act[t]!==""&&isFinite(parseFloat(M.act[t]));
+    out.push({n,r,pay:n+r,cum,exp,valid,act:actIn?parseFloat(M.act[t]):valid,actIn,
+      rate:exp>0?r/exp:null,cashN:n*x.avgN/10000,cashR:r*x.avgR/10000});
+  }
+  return {x,out};
+}
+const f0=v=>nf.format(Math.round(v)), f1=v=>(Math.round(v*10)/10).toLocaleString("ko-KR");
+function buildMem(){
+  ["g","p"].forEach(kd=>{
+    const M=MEM[kd], x=memMix(kd), nm=kd==="g"?"그룹":"개인레슨";
+    const cell=(f,t)=>`<td><input data-mk="${kd}" data-mf="${f}" data-mt="${t}" type="number" inputmode="decimal" min="0" step="any" value="${M[f][t]}" aria-label="${nm} ${MLAB[t]} ${f==="nw"?"신규회원":f==="rr"?"재등록회원":"활성회원"}"></td>`;
+    const calc=id=>MLAB.map((_,t)=>`<td id="mm-${kd}-${id}-${t}"></td>`).join("")+`<td class="tot" id="mm-${kd}-${id}-tot"></td>`;
+    $("mem-"+kd).innerHTML=`<h3 class="mem-h">${nm} 회원</h3>
+      <p class="note" style="margin:0">신규·재등록 회원이 고르는 이용권 비율 (판매가는 위 '${nm} 이용권 설계'에서 가져옴)</p>
+      <div class="scroll"><table class="mix"><thead><tr><th>이용권</th><th>판매가</th><th>신규 비중</th><th>재등록 비중</th></tr></thead><tbody>`+
+      x.rows.map((r,i)=>`<tr><td>${r.n}회 · ${r.m}개월</td><td>${wonW(r.sale)}</td><td><input data-mk="${kd}" data-mix="mixN" data-mi="${i}" type="number" inputmode="decimal" min="0" step="any" value="${M.mixN[i]}" aria-label="${nm} ${r.n}회권 신규 비중"> %</td><td><input data-mk="${kd}" data-mix="mixR" data-mi="${i}" type="number" inputmode="decimal" min="0" step="any" value="${M.mixR[i]}" aria-label="${nm} ${r.n}회권 재등록 비중"> %</td></tr>`).join("")+
+      `</tbody><tfoot><tr><td>1명 평균 결제액</td><td></td><td id="mm-${kd}-avgN"></td><td id="mm-${kd}-avgR"></td></tr></tfoot></table></div>
+      <p class="note neg" id="mm-${kd}-mixwarn" style="margin:2px 0 8px"></p>
+      <div class="scroll"><table class="mem"><thead><tr><th>${nm}</th>${MLAB.map(l=>`<th>${l}</th>`).join("")}<th>합계</th></tr></thead><tbody>
+      <tr class="in"><td>신규회원 <small>입력 · 명</small></td>${MLAB.map((_,t)=>cell("nw",t)).join("")}<td class="tot" id="mm-${kd}-n-tot"></td></tr>
+      <tr class="in"><td>재등록회원 <small>입력 · 명</small></td>${MLAB.map((_,t)=>cell("rr",t)).join("")}<td class="tot" id="mm-${kd}-r-tot"></td></tr>
+      <tr><td>결제 회원 <small>신규 + 재등록</small></td>${calc("pay")}</tr>
+      <tr><td>누적회원 <small>신규 누적</small></td>${calc("cum")}</tr>
+      <tr><td>이용권 끝나는 회원 <small>재등록 대상</small></td>${calc("exp")}</tr>
+      <tr><td>재등록률</td>${calc("rate")}</tr>
+      <tr><td>이탈률</td>${calc("churn")}</tr>
+      <tr class="in"><td>활성회원 <small>입력 · 비우면 추정값</small></td>${MLAB.map((_,t)=>cell("act",t)).join("")}<td class="tot" id="mm-${kd}-act-tot"></td></tr>
+      <tr class="money sep"><td>신규 결제 매출 <small>만원</small></td>${calc("cashN")}</tr>
+      <tr class="money"><td>재등록 결제 매출 <small>만원</small></td>${calc("cashR")}</tr>
+      <tr class="money"><td>${nm} 결제 매출 합계 <small>만원</small></td>${calc("cash")}</tr>
+      </tbody></table></div>
+      <h3 class="mem-h" style="font-size:13px">${nm} 이용권별 결제 매출 <small style="font-weight:400;color:var(--muted)">인원 = 그달 회원 수 × 이용권 비중 · 금액 = 인원 × 판매가 (만원)</small></h3>
+      <div class="scroll"><table class="mem det"><thead><tr><th>이용권</th>${MLAB.map(l=>`<th>${l}</th>`).join("")}<th>합계</th></tr></thead><tbody>`+
+      [["N","신규"],["R","재등록"]].map(([ty,tl],gi)=>x.rows.map((r,i)=>`<tr class="${i===0&&gi?"sep":""}"><td>${tl} · ${r.n}회권<small>${wonW(r.sale)}</small></td>${MLAB.map((_,t)=>`<td id="md-${kd}-${ty}${i}-${t}"></td>`).join("")}<td class="tot" id="md-${kd}-${ty}${i}-tot"></td></tr>`).join("")+
+        `<tr class="money"><td>${tl} 합계</td>${MLAB.map((_,t)=>`<td id="md-${kd}-${ty}s-${t}"></td>`).join("")}<td class="tot" id="md-${kd}-${ty}s-tot"></td></tr>`).join("")+
+      `<tr class="money sep"><td>${nm} 결제 매출 합계</td>${MLAB.map((_,t)=>`<td id="md-${kd}-all-${t}"></td>`).join("")}<td class="tot" id="md-${kd}-all-tot"></td></tr></tbody></table></div>`;
+  });
+  $("mem-sum").innerHTML=`<thead><tr><th>합계</th>${MLAB.map(l=>`<th>${l}</th>`).join("")}<th>합계</th></tr></thead><tbody>`+
+    [["pay","결제 회원 <small>명</small>"],["act","활성회원 <small>명</small>"],["cashN","신규 결제 매출 <small>만원</small>"],["cashR","재등록 결제 매출 <small>만원</small>"],["cash","결제 매출 합계 <small>만원</small>"]]
+      .map(([id,l])=>`<tr class="${id.startsWith("cash")?"money":""}${id==="cashN"?" sep":""}"><td>${l}</td>${MLAB.map((_,t)=>`<td id="ms-${id}-${t}"></td>`).join("")}<td class="tot" id="ms-${id}-tot"></td></tr>`).join("")+`</tbody>`;
+  MEM.sig=memSig();
+}
+const memSig=()=>JSON.stringify([pkgCalc(P,"g").rows.map(k=>[k.n,k.m,k.sale]),pkgCalc(P,"p").rows.map(k=>[k.n,k.m,k.sale])]);
+const ppl=c=>(Math.abs(c-Math.round(c))<0.05?nf.format(Math.round(c)):(Math.round(c*10)/10).toLocaleString("ko-KR"))+"명";
+const setH=(id,h)=>{const e=$(id); if(e) e.innerHTML=h;};
+function drawMem(){
+  if(MEM.sig!==memSig()||!$("mm-g-n-tot")) buildMem();
+  const set=(id,t,cls)=>{const e=$(id); if(e){e.textContent=t; e.className=(e.classList.contains("tot")?"tot ":"")+(cls||"");}};
+  const S={pay:Array(MN).fill(0),act:Array(MN).fill(0),cashN:Array(MN).fill(0),cashR:Array(MN).fill(0)};
+  ["g","p"].forEach(kd=>{
+    const {x,out}=memCalc(kd);
+    set(`mm-${kd}-avgN`,wonW(x.avgN)); set(`mm-${kd}-avgR`,wonW(x.avgR));
+    const mixN=Math.round(x.N.s), mixR=Math.round(x.R.s), w=[];
+    if(mixN!==100) w.push(`신규 비중 합계가 ${mixN}%`); if(mixR!==100) w.push(`재등록 비중 합계가 ${mixR}%`);
+    {const mw=$(`mm-${kd}-mixwarn`); if(mw) mw.textContent=w.length?`⚠ ${w.join(", ")}입니다. 100%가 되도록 맞춰 주세요(지금은 100%로 환산해 계산).`:"";}
+    let sn=0,sr=0,se=0,sN=0,sR=0; const DT={};
+    out.forEach((o,t)=>{
+      set(`mm-${kd}-pay-${t}`,f0(o.pay)); set(`mm-${kd}-cum-${t}`,f0(o.cum)); set(`mm-${kd}-exp-${t}`,o.exp>0?f1(o.exp):"—");
+      set(`mm-${kd}-rate-${t}`,o.rate===null?"—":Math.round(o.rate*100)+"%");
+      set(`mm-${kd}-churn-${t}`,o.rate===null?"—":Math.round(Math.max(0,1-o.rate)*100)+"%",o.rate!==null&&o.rate<.5?"neg":"");
+      set(`mm-${kd}-cashN-${t}`,f0(o.cashN)); set(`mm-${kd}-cashR-${t}`,f0(o.cashR)); set(`mm-${kd}-cash-${t}`,f0(o.cashN+o.cashR));
+      const a=document.querySelector(`[data-mk="${kd}"][data-mf="act"][data-mt="${t}"]`); if(a) a.placeholder=f0(o.valid);
+      sn+=o.n; sr+=o.r; se+=o.exp; sN+=o.cashN; sR+=o.cashR;
+      S.pay[t]+=o.pay; S.act[t]+=o.act; S.cashN[t]+=o.cashN; S.cashR[t]+=o.cashR;
+      // 이용권별: 인원 = 회원 수 × 비중, 금액 = 인원 × 판매가
+      [["N",o.n,x.N.w],["R",o.r,x.R.w]].forEach(([ty,cnt,w])=>{
+        let ss=0, sc=0;
+        x.rows.forEach((r,i)=>{const c=cnt*w[i], a=c*r.sale/10000; ss+=a; sc+=c; DT[`${ty}${i}`]=DT[`${ty}${i}`]||{c:0,a:0}; DT[`${ty}${i}`].c+=c; DT[`${ty}${i}`].a+=a;
+          setH(`md-${kd}-${ty}${i}-${t}`,c>0?`${f0(a)}<small>${ppl(c)}</small>`:"—");});
+        DT[ty+"s"]=DT[ty+"s"]||{c:0,a:0}; DT[ty+"s"].c+=sc; DT[ty+"s"].a+=ss;
+        setH(`md-${kd}-${ty}s-${t}`,sc>0?`${f0(ss)}<small>${ppl(sc)}</small>`:"—");
+      });
+      setH(`md-${kd}-all-${t}`,o.pay>0?`${f0(o.cashN+o.cashR)}<small>${ppl(o.pay)}</small>`:"—");
+    });
+    Object.keys(DT).forEach(k=>setH(`md-${kd}-${k}-tot`,DT[k].c>0?`${f0(DT[k].a)}<small>${ppl(DT[k].c)}</small>`:"—"));
+    setH(`md-${kd}-all-tot`,sn+sr>0?`${f0(sN+sR)}<small>${ppl(sn+sr)}</small>`:"—");
+    set(`mm-${kd}-n-tot`,f0(sn)); set(`mm-${kd}-r-tot`,f0(sr)); set(`mm-${kd}-pay-tot`,f0(sn+sr)); set(`mm-${kd}-cum-tot`,f0(sn));
+    set(`mm-${kd}-exp-tot`,se>0?f1(se):"—"); set(`mm-${kd}-rate-tot`,se>0?Math.round(sr/se*100)+"%":"—"); set(`mm-${kd}-churn-tot`,se>0?Math.round(Math.max(0,1-sr/se)*100)+"%":"—");
+    set(`mm-${kd}-act-tot`,"12월 "+f0(out[MN-1].act)); set(`mm-${kd}-cashN-tot`,f0(sN)); set(`mm-${kd}-cashR-tot`,f0(sR)); set(`mm-${kd}-cash-tot`,f0(sN+sR));
+  });
+  Object.keys(S).forEach(id=>{S[id].forEach((v,t)=>set(`ms-${id}-${t}`,f0(v))); set(`ms-${id}-tot`,id==="act"?"12월 "+f0(S.act[MN-1]):f0(S[id].reduce((a,b)=>a+b,0)));});
+  S.cash=S.cashN.map((v,t)=>v+S.cashR[t]); S.cash.forEach((v,t)=>set(`ms-cash-${t}`,f0(v))); set("ms-cash-tot",f0(S.cash.reduce((a,b)=>a+b,0)));
+}
+$("mem-panel").addEventListener("input",e=>{
+  const t=e.target, kd=t.dataset.mk; if(!kd) return;
+  if(t.dataset.mf) MEM[kd][t.dataset.mf][+t.dataset.mt]=t.value;
+  else if(t.dataset.mix) MEM[kd][t.dataset.mix][+t.dataset.mi]=t.value;
+  store.set("snc-members",MEM); render();
+});
+
+// ---------- 업종별 저장 칸 (필라테스·요가·바레) ----------
+const snap=()=>JSON.stringify({P,MEM,ACT});
+const slotData=k=>store.get("snc-slot-"+k);
+function dirty(){const d=preset&&slotData(preset); return d?JSON.stringify({P:d.P,MEM:d.MEM,ACT:d.ACT})!==snap():snap()!==JSON.stringify({P:BLANK,MEM:{g:memBlank(),p:memBlank()},ACT:Array.from({length:13},()=>({r:"",e:"",o:""}))});}
+function slotStatus(){
+  const el=$("slot-status"); if(!el) return;
+  const d=preset&&slotData(preset), t=d?new Date(d.at):null;
+  const when=t?`${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")} 저장`:"아직 저장 안 함";
+  el.textContent=preset?`지금: ${SLOTS[preset]} · ${when}${d&&dirty()?" · 저장 안 한 변경 있음":""}`:`지금 화면은 어느 업종 칸에도 저장되지 않았습니다 · 업종 옆 '저장'을 누르면 보관됩니다`;
+  Object.keys(SLOTS).forEach(k=>{const b=document.querySelector(`[data-save="${k}"]`); if(b) b.title=slotData(k)?`지금 화면을 ${SLOTS[k]} 칸에 덮어 저장`:`지금 화면을 ${SLOTS[k]} 칸에 저장`;});
+}
+function normMem(m){m=m||{}; ["g","p"].forEach(kd=>{const b=memBlank(); m[kd]=Object.assign(b,m[kd]||{}); ["nw","rr","act"].forEach(f=>{while(m[kd][f].length<MN) m[kd][f].push("");});}); return m;}
+function loadSlot(k){
+  const d=slotData(k);
+  P=Object.assign(clone(BLANK),d?d.P:{}); MEM=normMem(d?clone(d.MEM):null);
+  ACT=d&&Array.isArray(d.ACT)?clone(d.ACT):[]; while(ACT.length<13) ACT.push({r:"",e:"",o:""});
+  preset=k; buildPkg(); buildLists();
+  store.set("snc-preset",preset); store.set("snc-params",P); store.set("snc-members",MEM); store.set("snc-actuals",ACT);
+  fillInputs(); render();
+}
+let slotArmed=null;
+document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>{
+  const k=b.dataset.preset; if(k===preset&&!dirty()) return;
+  if(dirty()&&slotArmed!==k){slotArmed=k; b.classList.add("armed"); const old=b.textContent; b.textContent="저장 안 됨 · 한 번 더 누르면 이동";
+    setTimeout(()=>{slotArmed=null; b.classList.remove("armed"); b.textContent=SLOTS[k];},3000); return;}
+  slotArmed=null; b.classList.remove("armed"); b.textContent=SLOTS[k]; loadSlot(k);
+}));
+document.querySelectorAll("[data-save]").forEach(b=>b.addEventListener("click",()=>{
+  const k=b.dataset.save; store.set("snc-slot-"+k,{P,MEM,ACT,at:Date.now()});
+  preset=k; store.set("snc-preset",preset); fillInputs(); slotStatus();
+  b.classList.add("done"); b.textContent="저장됨 ✓"; setTimeout(()=>{b.classList.remove("done"); b.textContent="저장";},1800);
+}));
+let blankArmed=false;
+$("blank").addEventListener("click",e=>{
+  const b=e.currentTarget;
+  if(!blankArmed){blankArmed=true; b.classList.add("armed"); b.textContent="한 번 더 누르면 모두 지워짐"; setTimeout(()=>{blankArmed=false;b.classList.remove("armed");b.textContent="초기화"},3000); return;}
+  blankArmed=false; b.classList.remove("armed"); b.textContent="초기화";
+  P=clone(BLANK); buildPkg(); buildLists();
+  ACT=Array.from({length:13},()=>({r:"",e:"",o:""})); MEM={g:memBlank(),p:memBlank()};
+  store.set("snc-params",P); store.set("snc-actuals",ACT); store.set("snc-members",MEM);
+  fillInputs(); render(); window.scrollTo({top:0});
+});
+$("pkg-panel").addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.pk!==undefined) setPk(t);
+  else if(t.dataset.k) P[t.dataset.k]=parseFloat(t.value)||0;
+  else return;
+  store.set("snc-params",P); render();
+});
+$("pkg-panel").addEventListener("click",e=>{
+  const t=e.target, kd=t.dataset.add||t.dataset.kind; if(!kd||t.dataset.apply!==undefined) return;
+  const L=kd==="p"?P.ppkgs:P.pkgs;
+  if(t.dataset.add){const last=L[L.length-1]||{n:0,disc:0,m:2}; L.push({n:last.n+10,disc:Math.min(50,last.disc+5),share:0,m:last.m+2});}
+  else if(t.dataset.del!==undefined){if(L.length<=1) return; L.splice(+t.dataset.del,1);}
+  else return;
+  buildPkg(); store.set("snc-params",P); render();
+});
+$("mainShare").addEventListener("input",e=>{P.mainShare=Math.min(100,Math.max(0,parseFloat(e.target.value)||0)); store.set("snc-params",P); render();});
+if(TYPE){const n=TYPE_INFO[TYPE].name;
+  document.title=`${n} 스튜디오 수지분석기`; document.querySelector("h1").textContent=`${n} 스튜디오 수지분석기`;
+  document.querySelector(".sub").innerHTML=`${n} 스튜디오의 매출, 비용, 영업이익, 손익분기점, 투자회수기간을 한 화면에서 계산합니다. 금액 단위는 모두 <b>만원</b>이며, 값을 바꾸면 즉시 다시 계산됩니다.`;
+  const eq=SECTIONS[0].fields.find(f=>f[0]==="equip"); if(eq) eq[3]=TYPE_INFO[TYPE].equip;
+  document.querySelector(".presets > span").textContent="내 계획";
+  document.querySelectorAll(".presets .slot").forEach(sp=>{if(!sp.querySelector(`[data-preset="${TYPE}"]`)) sp.remove();});}
+$("cta-kakao").href=LINKS.kakao; $("cta-apply").href=LINKS.apply;
+buildInputs(); buildPkg(); buildLists(); fillInputs(); render();
+</script>
+
+</body></html>
