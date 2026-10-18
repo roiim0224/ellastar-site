@@ -1266,7 +1266,7 @@ function gateForm(){
     const now=new Date().toISOString(); $("g-save").disabled=true;
     const row={user_id:me.id,name:v("g-name"),phone,status:v("g-status"),sido:v("g-sido"),sigungu:v("g-sigungu")||null,timing:v("g-timing")||null,
       size_budget:v("g-size")||null,interests:[...document.querySelectorAll('[name="g-int"]:checked')].map(x=>x.value),source:v("g-source")||null,referrer:v("g-ref")||null,
-      privacy_agreed_at:now,privacy_version:PRIVACY_VERSION,marketing_agreed_at:$("g-mkt").checked?now:null};
+      privacy_agreed_at:now,privacy_version:PRIVACY_VERSION,marketing_agreed_at:$("g-mkt").checked?now:null,from_tag:savedFrom()};
     const {error}=await sb.schema("calc").from("members").insert(row);
     if(error){$("g-save").disabled=false; $("g-err").innerHTML=`<div class="wz-msg bad">저장하지 못했어요. 잠시 후 다시 눌러 주세요.</div>`; return;}
     // 1단계(지금 상태·지역)를 미리 채워 둠
@@ -1303,7 +1303,11 @@ async function logout(){
   ["snc-params","snc-members","snc-actuals","snc-view","snc-wiz-step","snc-preset","snc-slot-"+TYPE].forEach(k=>{try{localStorage.removeItem(store.key(k))}catch(e){}});
   location.replace(location.pathname);
 }
+const FROM_RE=/^[A-Za-z0-9_-]{1,40}$/; // 유입 영상 꼬리표 (?from=pulling3) — 카카오 로그인으로 주소가 바뀌기 전에 저장해 둠
+function keepFrom(){const f=new URLSearchParams(location.search).get("from"); if(f&&FROM_RE.test(f)) try{localStorage.setItem("snc-from",f)}catch(e){}}
+const savedFrom=()=>{try{const f=localStorage.getItem("snc-from"); return f&&FROM_RE.test(f)?f:null}catch(e){return null}};
 async function authInit(){
+  keepFrom();
   if(!TYPE) return wShow(store.get("snc-view")==="full"?"full":"wiz"); // 통합판(Roi 개인용)은 로그인 없이
   $("cta-apply").textContent="내 숫자 무료 진단 신청"; $("cta-apply").removeAttribute("target");
   $("cta-apply").addEventListener("click",e=>{if(me){e.preventDefault(); if(!consulted) consult();}});

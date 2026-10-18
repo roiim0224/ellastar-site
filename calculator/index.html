@@ -94,7 +94,7 @@ footer a{color:var(--muted)}
 // 카카오톡 채널·신청서 주소가 정해지면 여기만 바꿈. 업종 공개 순서는 OPEN에서 조절(영상 공개에 맞춰 하나씩 열기)
 const LINKS={kakao:"https://open.kakao.com/o/sZE82VSi", start:"/c-a3u3nvql95q/pilates.html"}; // start = 카카오 로그인 → 1분 정보 입력 → 분석기
 const OPEN={pilates:true, barre:false, yoga:false};
-document.querySelectorAll("[data-link]").forEach(a=>a.href=LINKS[a.dataset.link]);
+document.querySelectorAll("[data-link]").forEach(a=>a.href=LINKS[a.dataset.link]+(a.dataset.link==="start"?location.search:"")); // ?from=영상꼬리표 를 분석기로 넘김
 document.querySelectorAll(".card[data-type]").forEach(c=>{
   if(OPEN[c.dataset.type]) return;
   c.classList.add("soon");
