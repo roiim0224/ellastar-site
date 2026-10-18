@@ -1301,7 +1301,7 @@ async function startApp(){
     if(error) throw error;
     if(data&&data.data) applyPlan(data.data); else pushPlan(true); // 계정에 저장된 값이 있으면 그것으로, 없으면 지금 브라우저 값을 계정에 올림
   }catch(e){dirtyPlan=true; pushT=setTimeout(pushPlan,30000);} // 서버가 늦으면 브라우저 값으로 먼저 열고 나중에 올림
-  gateHide(); wShow(store.get("snc-view")==="full"?"full":"wiz");
+  gateHide(); wShow("wiz"); // 공개판은 열 때마다 단계형부터 (전체 화면은 '자세히 보기'로만)
 }
 function gateRetry(t){
   gateShow(`<div class="wz-card"><h2>${TYPE_INFO[TYPE].name} 스튜디오 수지분석기</h2><div class="wz-msg warn">${t}</div>
