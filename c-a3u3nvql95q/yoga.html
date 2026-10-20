@@ -244,6 +244,9 @@ body:not(.ready) .wrap,body:not(.ready) #wiz{display:none}
 .wz-top .wz-acts{display:flex;gap:14px}
 /* 넓은 화면(PC·녹화)에서는 단계형을 크게: 영상에서 줄여 보여도 읽히게 (2026-10-18) */
 @media (min-width:900px){#wiz,#gate{zoom:1.25;padding-top:12px}}
+.demo-bar{background:var(--surface);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:5px 12px}
+.demo-bar a{color:var(--accent);margin-left:8px;font-weight:600}
+.demo .presets{display:none}
 .to-wiz{display:inline-block;margin-top:8px;border:1px solid var(--accent);color:var(--accent);background:var(--surface);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -428,10 +431,19 @@ const PRESETS = {
 const TYPE="yoga"; // null = 세 업종 통합판(내부용) · "pilates" | "yoga" | "barre" = 공개용 업종 전용판
 const LINKS={kakao:"https://open.kakao.com/o/sZE82VSi", apply:"https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform", home:"https://ellastar.co.kr"}; // 카카오톡 채널·신청서 주소가 정해지면 여기만 바꿈
 const TYPE_INFO={pilates:{name:"필라테스",equip:"리포머·체어·바렐·매트·소도구 등"},yoga:{name:"요가",equip:"매트·볼스터·블록·소도구 등"},barre:{name:"바레",equip:"바(봉)·매트·소도구 등"}};
+// 영상 촬영용 예시값: 주소에 ?demo=ep2 를 붙였을 때만 (화면에 버튼 없음 · 풀링 편 제품명 노출 금지). 2026-10-20 Roi 승인
+// 예시 모드에서는 브라우저·계정 어디에도 저장하지 않음 → Roi가 저장해 둔 값(1편 촬영값·계정 저장값)은 그대로
+const DEMOS={ep2:{commonArea:65,commonPerPy:15000,iaRate:0.7,retire:1,pFee:2.5,usage:[{name:"전기",amt:70},{name:"수도·가스",amt:15},{name:"통신·인터넷",amt:8},{name:"정수기 렌탈",amt:3},{name:"공기청정기·비데 렌탈",amt:6},{name:"보안(무인경비)",amt:8}],staffList:[{name:"매니저",sal:280,age:32},{name:"상담·안내",sal:220,age:27}],deposit:5000,area:40,perPy:130,fixtures:800,pkgMode:1,basePrice:35000,pBase:70000,pReg:60,targetOcc:65,mainShare:60,pkgs:[{n:10,disc:5,share:20,m:2},{n:20,disc:10,share:50,m:4},{n:30,disc:15,share:20,m:5},{n:50,disc:20,share:10,m:7}],ppkgs:[{n:10,disc:3,share:40,m:3},{n:20,disc:7,share:40,m:5},{n:30,disc:10,share:20,m:6}],equip:5800,openEtc:1500,working:3000,depYears:5,
+    gClasses:42,gCap:8,gOcc:60,gPrice:3,pSessions:150,pPrice:7,otherRev:100,regMembers:260,activeRate:66,pActiveRate:66,visits:8,gFee:4,pComm:40,cardFee:2,otherCogs:40,
+    rent:550,maint:150,staff:600,mkt:300,supplies:80,software:40,miscFixed:100,rampStart:35,rampMonths:9,vat:1,ownerTeach:1,ownerPay:400,ownerGroup:10,ownerPrivate:40,memLink:0,
+    loc:{status:"운영 중",sido:"",sigungu:"",area:""}}}; // 풀링 2편 「회원 260명인데 왜 남는 게 없을까」 (전체 화면, 회원 흐름·실적 기록 비움)
+const DEMO=(()=>{const q=new URLSearchParams(location.search); let k=q.get("demo");
+  if(!k&&(q.has("code")||q.has("error"))) try{k=sessionStorage.getItem("snc-demo")}catch(e){} // 카카오 로그인 다녀오면 주소가 바뀌어서 따로 기억해 둔 것
+  try{sessionStorage.removeItem("snc-demo")}catch(e){} return DEMOS[k]?k:null;})();
 const store = {
   key(k){return (TYPE?TYPE+":":"")+k}, // 같은 사이트 안에서 업종별 페이지끼리 입력값이 섞이지 않게
   get(k){try{return JSON.parse(localStorage.getItem(this.key(k)))}catch(e){return null}},
-  set(k,v){try{localStorage.setItem(this.key(k),JSON.stringify(v))}catch(e){}}
+  set(k,v){if(DEMO&&k!=="snc-member-ok") return; try{localStorage.setItem(this.key(k),JSON.stringify(v))}catch(e){}}
 };
 const clone = o=>JSON.parse(JSON.stringify(o));
 // 빈 칸: 업종마다 다른 숫자는 0, 요율·기간 같은 기준값과 이용권 구성(횟수·기간)은 남겨 둠
@@ -1247,7 +1259,7 @@ function gateLogin(err){
     ${err?`<div class="wz-msg bad">${hx(err)}</div>`:""}
     <div class="wz-cta"><button type="button" class="kakao" id="g-kakao">카카오로 시작하기</button></div>
     <p class="wz-note">처음 한 번만 1분 정보 입력을 하면 바로 쓸 수 있어요. 결과는 입력한 숫자로 계산한 참고용이며 수익을 보장하지 않습니다. <a href="/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a></p></div>`);
-  $("g-kakao").onclick=async e=>{e.currentTarget.disabled=true;
+  $("g-kakao").onclick=async e=>{e.currentTarget.disabled=true; if(DEMO) try{sessionStorage.setItem("snc-demo",DEMO)}catch(e){}
     const {error}=await sb.auth.signInWithOAuth({provider:"kakao",options:{redirectTo:location.origin+location.pathname}});
     if(error) gateLogin("카카오 로그인을 시작하지 못했어요. 잠시 후 다시 눌러 주세요.");};
 }
@@ -1308,14 +1320,20 @@ function applyPlan(d){
   rawSet("snc-params",P); rawSet("snc-members",MEM); rawSet("snc-actuals",ACT);
 }
 async function pushPlan(force){
-  clearTimeout(pushT); pushT=null; if(!me||!(dirtyPlan||force)) return;
+  clearTimeout(pushT); pushT=null; if(DEMO||!me||!(dirtyPlan||force)) return; // 예시 모드는 계정에 올리지 않음
   dirtyPlan=false;
   try{
     const {error}=await withTimeout(sb.schema("calc").from("plans").upsert({user_id:me.id,studio_type:TYPE,data:{P,MEM,ACT},updated_at:new Date().toISOString()},{onConflict:"user_id,studio_type"}));
     if(error) throw error;
   }catch(e){dirtyPlan=true; pushT=setTimeout(pushPlan,30000);} // 실패하면 브라우저에는 남아 있고 30초 뒤 다시 올림
 }
+function applyDemo(){
+  P=Object.assign(clone(BLANK),clone(DEMOS[DEMO])); MEM=normMem(null); ACT=Array.from({length:13},()=>({r:"",e:"",o:""}));
+  document.body.classList.add("demo");
+  document.body.insertAdjacentHTML("afterbegin",`<div class="demo-bar">영상 예시 값 · 저장 안 됨 <a href="${location.pathname}">내 값으로 돌아가기</a></div>`);
+}
 async function startApp(){
+  if(DEMO){applyDemo(); gateHide(); return wShow("full");} // 계정 값은 불러오지도 덮어쓰지도 않음
   try{
     const {data,error}=await withTimeout(sb.schema("calc").from("plans").select("data").eq("studio_type",TYPE).maybeSingle());
     if(error) throw error;
@@ -1343,6 +1361,7 @@ function keepFrom(){const f=new URLSearchParams(location.search).get("from"); if
 const savedFrom=()=>{try{const f=localStorage.getItem("snc-from"); return f&&FROM_RE.test(f)?f:null}catch(e){return null}};
 async function authInit(){
   keepFrom();
+  if(!TYPE&&DEMO){applyDemo(); return wShow("full");}
   if(!TYPE) return wShow(store.get("snc-view")==="full"?"full":"wiz"); // 통합판(Roi 개인용)은 로그인 없이
   $("cta-apply").textContent="내 숫자 무료 진단 신청"; $("cta-apply").removeAttribute("target");
   $("cta-apply").addEventListener("click",e=>{if(me){e.preventDefault(); if(!consulted) consult();}});
@@ -1353,7 +1372,7 @@ async function authInit(){
   const SLOW="지금 접속이 많거나 서버가 늦어요. 잠시 후 다시 시도해 주세요.";
   let session;
   try{({data:{session}}=await withTimeout(sb.auth.getSession()));}catch(e){return gateRetry(SLOW);}
-  if(location.search||location.hash) history.replaceState(null,"",location.pathname);
+  if(location.search||location.hash) history.replaceState(null,"",location.pathname+(DEMO?"?demo="+DEMO:""));
   if(!session) return gateLogin(failed?"카카오 로그인이 취소되었거나 실패했어요. 다시 시도해 주세요.":"");
   me=session.user;
   const okKey="snc-member-ok"; // 1분 정보를 이미 낸 계정 표시 (서버가 늦을 때 이 브라우저에서 바로 열기 위함)

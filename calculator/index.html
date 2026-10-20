@@ -54,7 +54,7 @@ footer a{color:var(--muted)}
     <h1>창업하기 전에,<br>내 스튜디오를 숫자로 먼저 보세요</h1>
     <p class="lead">질문에 하나씩 답하면 한 달에 얼마가 남는지, 몇 명이 와야 본전인지 바로 계산됩니다. 카카오로 시작해 1분 정보만 입력하면 바로 쓸 수 있고, 입력한 숫자는 내 계정에 저장됩니다.</p>
     <div class="btns">
-      <a class="btn apply" data-link="start" href="/c-a3u3nvql95q/pilates.html?v=20261018g">카카오로 시작하기</a>
+      <a class="btn apply" data-link="start" href="/c-a3u3nvql95q/pilates.html?v=20261020a">카카오로 시작하기</a>
       <a class="btn kakao" data-link="kakao" href="https://open.kakao.com/o/sZE82VSi" target="_blank" rel="noopener">카카오톡으로 문의</a>
     </div>
   </header>
@@ -92,7 +92,7 @@ footer a{color:var(--muted)}
 </div>
 <script>
 // 카카오톡 채널·신청서 주소가 정해지면 여기만 바꿈. 업종 공개 순서는 OPEN에서 조절(영상 공개에 맞춰 하나씩 열기)
-const LINKS={kakao:"https://open.kakao.com/o/sZE82VSi", start:"/c-a3u3nvql95q/pilates.html?v=20261018g"}; // v = 배포 버전(start/index.html과 같이 바꿈) // start = 카카오 로그인 → 1분 정보 입력 → 분석기
+const LINKS={kakao:"https://open.kakao.com/o/sZE82VSi", start:"/c-a3u3nvql95q/pilates.html?v=20261020a"}; // v = 배포 버전(start/index.html과 같이 바꿈) // start = 카카오 로그인 → 1분 정보 입력 → 분석기
 const OPEN={pilates:true, barre:false, yoga:false};
 document.querySelectorAll("[data-link]").forEach(a=>a.href=LINKS[a.dataset.link]+(a.dataset.link==="start"&&location.search?"&"+location.search.slice(1):"")); // ?from=영상꼬리표 를 분석기로 넘김
 document.querySelectorAll(".card[data-type]").forEach(c=>{
