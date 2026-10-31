@@ -272,7 +272,7 @@ body:not(.ready) .wrap,body:not(.ready) #wiz{display:none}
 
   <div class="cta" id="cta">
     <p><b>입력한 숫자로 계산한 참고용 결과이며, 수익을 보장하지 않습니다.</b> 내 숫자를 함께 해석해 드리는 무료 진단을 받아 보세요.</p>
-    <div><a class="btn kakao" id="cta-kakao" href="https://open.kakao.com/o/sZE82VSi" target="_blank" rel="noopener">카카오톡으로 문의</a><a class="btn apply" id="cta-apply" href="https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform" target="_blank" rel="noopener">무료 숫자 진단 신청</a></div>
+    <div><a class="btn kakao" id="cta-kakao" href="https://pf.kakao.com/_XlxhWX/chat" target="_blank" rel="noopener">카카오톡으로 문의</a><a class="btn apply" id="cta-apply" href="https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform" target="_blank" rel="noopener">무료 숫자 진단 신청</a></div>
   </div>
 
   <section class="kpis" id="kpis" aria-label="핵심 지표"></section>
@@ -429,7 +429,7 @@ const PRESETS = {
 };
 // ---------- 페이지 설정 (build_calculators.py가 업종별 파일을 만들 때 TYPE을 바꿈) ----------
 const TYPE="pilates"; // null = 세 업종 통합판(내부용) · "pilates" | "yoga" | "barre" = 공개용 업종 전용판
-const LINKS={kakao:"https://open.kakao.com/o/sZE82VSi", apply:"https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform", home:"https://ellastar.co.kr"}; // 카카오톡 채널·신청서 주소가 정해지면 여기만 바꿈
+const LINKS={kakao:"https://pf.kakao.com/_XlxhWX/chat", apply:"https://docs.google.com/forms/d/e/1FAIpQLSdjIBmbiOXQBDCWStV2GbJxVXQJAdbYvnsi9TEFDKArzRvZiw/viewform", home:"https://ellastar.co.kr"}; // kakao = 엘라스타 카카오톡 비즈 채널 채팅 (2026-10-31, 오픈채팅에서 변경)
 const TYPE_INFO={pilates:{name:"필라테스",equip:"리포머·체어·바렐·매트·소도구 등"},yoga:{name:"요가",equip:"매트·볼스터·블록·소도구 등"},barre:{name:"바레",equip:"바(봉)·매트·소도구 등"}};
 // 영상 촬영용 예시값: 주소에 ?demo=ep2 를 붙였을 때만 (화면에 버튼 없음 · 풀링 편 제품명 노출 금지). 2026-10-20 Roi 승인
 // 예시 모드에서는 브라우저·계정 어디에도 저장하지 않음 → Roi가 저장해 둔 값(1편 촬영값·계정 저장값)은 그대로
