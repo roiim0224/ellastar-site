@@ -101,6 +101,12 @@ h2{font-size:clamp(24px,4.4vw,34px)}
 .tbl th{width:34%;color:var(--muted);font-weight:500}
 .tbl tr:last-child th,.tbl tr:last-child td{border-bottom:0}
 .note{font-size:13px;color:var(--muted);margin-top:10px}
+.pains{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:24px}
+@media (min-width:860px){.pains{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pain{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 20px}
+.pain .q{margin:0;font-size:17px;font-weight:600;color:var(--muted)}
+.pain .a{margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:15px;color:var(--muted)}
+.pain .a b{display:block;color:var(--accent);font-size:18px;margin-bottom:4px}
 /* 안내 카드 */
 .info{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:24px}
 @media (min-width:860px){.info{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -177,6 +183,19 @@ footer a{color:var(--muted)}
   <div><b>56kg</b><span>무게</span></div>
 </div></div>
 </section>
+
+<!-- 1-1. 이런 원장님께 (원장 고충 → 해결) -->
+<section id="owners"><div class="wrap">
+  <div class="eyebrow">For Owners</div>
+  <h2>바레, 하고 싶은데<br>이런 이유로 미루고 계신가요?</h2>
+  <div class="pains">
+    <div class="pain"><p class="q">“벽은 이미 거울과 기구로 꽉 찼어요.”</p><p class="a"><b>벽에 바를 달지 않습니다.</b> 바레 레버가 달린 벡터를 빈자리에 세우면 됩니다.</p></div>
+    <div class="pain"><p class="q">“바레 공간 만들려면 인테리어를 또 해야 하잖아요.”</p><p class="a"><b>추가 공사가 없습니다.</b> 폭 900 × 길이 1,360mm 자리 하나면 배송과 함께 설치까지 해 드립니다.</p></div>
+    <div class="pain"><p class="q">“지금 있는 리포머는 어떻게 하고요?”</p><p class="a"><b>리포머는 그대로 두세요.</b> 기존 필라테스 수업은 그대로, 같은 공간에 바레·케이블 수업을 더합니다.</p></div>
+  </div>
+  <p class="hook" style="text-align:center;margin-top:28px">벽 공사 없이, 필라테스 수업부터 바레까지</p>
+  <div class="ctas" style="justify-content:center;margin:16px auto 0;max-width:520px"><a class="btn pri" href="#order">구매 신청하기</a><a class="btn kakao" data-kakao href="https://pf.kakao.com/_XlxhWX/chat" target="_blank" rel="noopener">카톡으로 상담</a></div>
+</div></section>
 
 <!-- 2. 소개 -->
 <section><div class="wrap split">
