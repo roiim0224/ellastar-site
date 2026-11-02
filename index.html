@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ELLASTAR — One System to Rule Them All</title>
-<meta name="description" content="ELLASTAR · 공간 효율성과 수익을 증대할 솔루션. 곧 오픈됩니다.">
+<meta name="description" content="ELLASTAR · 공간 효율성과 수익을 증대할 솔루션. 공간이 매출이 되는 ELLASTAR 벡터 출시.">
 <meta property="og:title" content="ELLASTAR — One System to Rule Them All">
-<meta property="og:description" content="공간 효율성과 수익을 증대할 솔루션. 곧 오픈됩니다.">
+<meta property="og:description" content="공간 효율성과 수익을 증대할 솔루션. 공간이 매출이 되는 ELLASTAR 벡터 출시.">
 <meta property="og:image" content="assets/hero-poster.jpg">
 <link rel="icon" href="assets/favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap">
 <style>
-/* ELLASTAR 첫 페이지(티저): 모션그래픽 배경 + 로고 + 한 줄 + 곧 오픈. 제품 사진·설명은 추후 공개 */
+/* ELLASTAR 첫 페이지: 모션그래픽 배경 + 로고 + 한 줄 + 벡터 구매(2026-11-02 출시) + 수지분석기 */
 :root{--red:#d64a37;--ink:#14110f;--paper:#f4efe8;--muted:rgba(244,239,232,.72);--f:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--ink);color:var(--paper);font-family:var(--f)}
@@ -36,6 +36,10 @@ footer a:hover{color:var(--paper)}
 .cta-types{white-space:nowrap}
 .cta-types::before{content:"· "}
 @media (max-width:560px){.cta-types{display:block}.cta-types::before{content:none}}
+.cta.alt{background:var(--paper);color:var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.35);animation-delay:1.4s}
+.cta.alt:hover,.cta.alt:focus-visible{background:#fff;box-shadow:0 14px 36px rgba(0,0,0,.45)}
+.cta.alt .cta-s{color:rgba(20,17,15,.7)}
+.cta.alt .cta-k b{color:var(--red);font-weight:600}
 .cta-arrow{grid-column:2;grid-row:1 / span 2;font-size:24px;transition:transform .2s}
 .cta:hover .cta-arrow{transform:translateX(4px)}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -53,7 +57,11 @@ footer a:hover{color:var(--paper)}
   <div class="content">
     <h1 style="margin:0"><img class="logo" src="assets/ellastar-logo_white.png" alt="ELLASTAR — One System to Rule Them All"></h1>
     <p class="line">공간 효율성과 수익을 증대할 솔루션</p>
-    <div class="soon"><i aria-hidden="true"></i>Coming soon · <b>곧 오픈됩니다</b></div>
+    <a class="cta alt" href="vector/">
+      <span class="cta-k"><b>NEW</b> ELLASTAR 벡터 구매하기</span>
+      <span class="cta-s">벽 공사 없이, 필라테스 수업부터 바레까지 · 3,300,000원</span>
+      <span class="cta-arrow" aria-hidden="true">→</span>
+    </a>
     <a class="cta" href="calculator/">
       <span class="cta-k">스튜디오 수지분석기 무료로 받기</span>
       <span class="cta-s">내 스튜디오, 한 달에 얼마 남을까? <span class="cta-types">필라테스 · 바레 · 요가</span></span>
