@@ -15,20 +15,26 @@
 :root{--red:#d64a37;--ink:#14110f;--paper:#f4efe8;--muted:rgba(244,239,232,.72);--f:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--ink);color:var(--paper);font-family:var(--f)}
-.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}
-.hero video,.hero .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.hero .poster{background:url(assets/hero-poster.jpg) center/cover no-repeat}
-.hero::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,rgba(20,17,15,.45) 0%,rgba(20,17,15,.78) 70%,rgba(20,17,15,.92) 100%)}
-.content{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px;max-width:760px}
-.logo{width:min(560px,82vw);height:auto;opacity:0;animation:rise 1.4s .2s ease-out forwards}
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;padding:32px 40px 0;background:radial-gradient(ellipse at 70% 40%,#2c2520 0%,var(--ink) 65%)}
+.stage{width:100%;max-width:1280px;margin:auto;display:grid;grid-template-columns:minmax(320px,380px) minmax(0,1fr);grid-template-areas:"brand film" "actions film";grid-template-rows:auto auto;gap:22px 48px;align-content:center;align-items:center}
+.brand{grid-area:brand;align-self:end;display:flex;flex-direction:column;gap:16px}
+.actions{grid-area:actions;align-self:start;display:flex;flex-direction:column;gap:12px}
+.film{grid-area:film;position:relative;margin:0;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#e9e9e7;box-shadow:0 24px 60px rgba(0,0,0,.5);opacity:0;animation:rise 1.2s .5s ease-out forwards}
+.film video{display:block;width:100%;height:100%;object-fit:cover}
+.sound{position:absolute;left:14px;top:14px;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:rgba(20,17,15,.82);color:#fff;font:500 14px var(--f);cursor:pointer;transition:background .2s}
+.sound:hover,.sound:focus-visible{background:var(--red)}
+.sound:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sound i{font-style:normal}
+.sound svg{width:18px;height:18px;fill:currentColor}
+.logo{display:block;width:100%;height:auto;opacity:0;animation:rise 1.4s .2s ease-out forwards}
 .line{font-size:clamp(17px,2.6vw,22px);font-weight:400;letter-spacing:.02em;margin:0;color:var(--paper);opacity:0;animation:rise 1.2s .9s ease-out forwards;text-wrap:balance}
 .soon{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);border:1px solid rgba(244,239,232,.35);border-radius:999px;padding:9px 18px;opacity:0;animation:rise 1.2s 1.4s ease-out forwards}
 .soon i{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(214,74,55,.7);animation:pulse 2s infinite}
 .soon b{font-weight:500;letter-spacing:.06em;text-transform:none}
-footer{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:14px 16px calc(14px + env(safe-area-inset-bottom));font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;text-align:center}
+footer{padding:20px 0 calc(14px + env(safe-area-inset-bottom));font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;text-align:center}
 footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid rgba(244,239,232,.25)}
 footer a:hover{color:var(--paper)}
-.cta{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 18px;text-decoration:none;color:#fff;background:var(--red);border-radius:14px;padding:16px 22px 16px 26px;margin-top:10px;box-shadow:0 10px 30px rgba(214,74,55,.35);text-align:left;opacity:0;animation:rise 1.2s 1.9s ease-out forwards;transition:transform .2s,box-shadow .2s,background .2s}
+.cta{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 18px;text-decoration:none;color:#fff;background:var(--red);border-radius:14px;padding:16px 20px 16px 22px;box-shadow:0 10px 30px rgba(214,74,55,.35);text-align:left;opacity:0;animation:rise 1.2s 1.9s ease-out forwards;transition:transform .2s,box-shadow .2s,background .2s}
 .cta:hover,.cta:focus-visible{transform:translateY(-2px);box-shadow:0 14px 36px rgba(214,74,55,.5);background:#e0533f}
 .cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .cta-k{font-size:clamp(17px,2.4vw,20px);font-weight:600;letter-spacing:-.005em}
@@ -44,34 +50,61 @@ footer a:hover{color:var(--paper)}
 .cta:hover .cta-arrow{transform:translateX(4px)}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(214,74,55,.7)}70%{box-shadow:0 0 0 10px rgba(214,74,55,0)}100%{box-shadow:0 0 0 0 rgba(214,74,55,0)}}
-@media (prefers-reduced-motion:reduce){.hero video{display:none}.logo,.line,.soon,.cta{animation:none;opacity:1}.soon i{animation:none}}
-@media (max-width:560px){footer{position:relative;margin-top:auto}.hero{justify-content:space-between}.content{margin:auto 0}}
+@media (prefers-reduced-motion:reduce){.logo,.line,.film,.cta{animation:none;opacity:1}}
+@media (max-width:860px){.hero{padding:20px 16px 0}.stage{grid-template-columns:minmax(0,1fr);grid-template-areas:"brand" "film" "actions";gap:16px;margin:0 auto}.brand{align-items:center;text-align:center;gap:8px}.logo{width:min(280px,70vw)}.film{border-radius:10px}.sound{left:8px;top:8px;min-height:40px;padding:0 12px;font-size:13px}.sound i{display:none}footer{margin-top:auto}}
 </style>
 </head>
 <body>
 <main class="hero">
-  <div class="poster" aria-hidden="true"></div>
-  <video autoplay muted loop playsinline preload="metadata" poster="assets/hero-poster.jpg" aria-hidden="true">
-    <source src="assets/hero.mp4" type="video/mp4">
-  </video>
-  <div class="content">
-    <h1 style="margin:0"><img class="logo" src="assets/ellastar-logo_white.png" alt="ELLASTAR — One System to Rule Them All"></h1>
-    <p class="line">공간 효율성과 수익을 증대할 솔루션</p>
-    <a class="cta alt" href="vector/">
-      <span class="cta-k"><b>NEW</b> ELLASTAR 벡터 구매하기</span>
-      <span class="cta-s">벽 공사 없이, 필라테스 수업부터 바레까지 · 3,300,000원</span>
-      <span class="cta-arrow" aria-hidden="true">→</span>
-    </a>
-    <a class="cta" href="calculator/">
-      <span class="cta-k">스튜디오 수지분석기 무료로 받기</span>
-      <span class="cta-s">내 스튜디오, 한 달에 얼마 남을까? <span class="cta-types">필라테스 · 바레 · 요가</span></span>
-      <span class="cta-arrow" aria-hidden="true">→</span>
-    </a>
+  <div class="stage">
+    <div class="brand">
+      <h1 style="margin:0"><img class="logo" src="assets/ellastar-logo_white.png" alt="ELLASTAR — One System to Rule Them All"></h1>
+      <p class="line">공간 효율성과 수익을 증대할 솔루션</p>
+    </div>
+    <figure class="film">
+      <video id="film" autoplay muted loop playsinline preload="metadata" poster="assets/vector-film-poster.jpg" aria-label="ELLASTAR 벡터 소개 영상, 81초, 자막 포함">
+        <source src="assets/vector-film.mp4" type="video/mp4">
+      </video>
+      <button class="sound" id="sound" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg><span>소리 켜기<i> · 처음부터 보기</i></span></button>
+    </figure>
+    <div class="actions">
+      <a class="cta alt" href="vector/">
+        <span class="cta-k"><b>NEW</b> ELLASTAR 벡터 상담받기</span>
+        <span class="cta-s">공간을 늘리지 말고, 운동을 늘리세요 · 런칭기념 40% 할인 3,270,000원</span>
+        <span class="cta-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="cta alt" href="vector/#moves">
+        <span class="cta-k">자세히 알아보기</span>
+        <span class="cta-s">벡터로 할 수 있는 동작을 영상으로 보세요</span>
+        <span class="cta-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="cta" href="calculator/">
+        <span class="cta-k">스튜디오 수지분석기 무료로 받기</span>
+        <span class="cta-s">내 스튜디오, 한 달에 얼마 남을까? <span class="cta-types">필라테스 · 바레 · 요가</span></span>
+        <span class="cta-arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
   </div>
   <footer>
     <span>상호 엘라스타 · 대표 홍지영 · 사업자등록번호 871-56-01015 · 통신판매업신고 <span style="white-space:nowrap">제2026-충북제천-0239호</span> · 주소 충북 제천시 대학로 316, 대원대학교 창업보육센터 1층 110호 · 문의 <span style="white-space:nowrap">010-3649-0224</span></span>
     <span><a href="https://pf.kakao.com/_XlxhWX/chat" target="_blank" rel="noopener">카카오톡 문의</a> · <a href="privacy.html">개인정보처리방침</a></span>
   </footer>
 </main>
+<script>
+(function(){
+  var v=document.getElementById('film'),b=document.getElementById('sound');
+  var still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(still){v.removeAttribute('autoplay');v.pause();b.querySelector('span').textContent='소리 켜고 재생';}
+  b.addEventListener('click',function(){
+    v.loop=false;v.muted=false;v.currentTime=0;v.controls=true;b.hidden=true;v.play();
+  });
+})();
+</script>
+<script>
+// 구글 애널리틱스. 시험 서버에서는 켜지지 않음
+(function(){var GA_ID="G-ST0T6DT1GY";if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname))return;
+var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(s);
+window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID);})();
+</script>
 </body>
 </html>
