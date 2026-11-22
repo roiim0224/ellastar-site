@@ -143,9 +143,11 @@ footer a:hover{color:var(--paper)}
 </script>
 <script>
 // 구글 애널리틱스. 시험 서버에서는 켜지지 않음
+// ?from=꼬리표를 구글 애널리틱스 캠페인으로 넘김(주소창은 그대로). v_=유튜브 영상, yt_=유튜브, nv_=네이버 광고, meta_=메타 광고, ig_=인스타, dm_=직접 영업
+function gaLoc(){try{var q=new URLSearchParams(location.search),f=q.get("from");if(!f||!/^[A-Za-z0-9_-]{1,40}$/.test(f)||q.get("utm_source"))return location.href;var M={v:["youtube","video"],yt:["youtube","video"],nv:["naver","cpc"],meta:["meta","paid_social"],ig:["instagram","social"],dm:["direct_message","dm"]},m=M[f.split("_")[0]]||["from_link","link"],u=new URL(location.href);u.searchParams.set("utm_source",m[0]);u.searchParams.set("utm_medium",m[1]);u.searchParams.set("utm_campaign",f);return u.href}catch(e){return location.href}}
 (function(){var GA_ID="G-ST0T6DT1GY";if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname))return;
 var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(s);
-window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID);})();
+window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID,{page_location:gaLoc()});})();
 </script>
 </body>
 </html>
